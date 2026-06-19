@@ -1,0 +1,161 @@
+Implement all student-facing modules in the existing CampusFlow project.
+
+Use local JSON files or browser localStorage for data persistence.
+
+Do not use MongoDB, JWT, external databases, or cloud storage.
+
+==================================================
+
+MODULE 1: SMART ISSUE REPORTING
+
+Students can:
+
+* Create Issue
+* View Their Issues
+* Track Status
+* View Resolution Details
+* Rate Resolution
+
+Fields:
+
+* Issue Title
+* Description
+* Location (Free Text)
+* Category
+* Priority
+* Upload Photo
+
+Create image upload functionality using local browser storage.
+
+==================================================
+
+AI ASSISTED CATEGORIZATION
+
+When the student enters issue details:
+
+Automatically suggest:
+
+* Category
+* Priority
+* Responsible Department
+
+Use keyword-based rule logic.
+
+Examples:
+
+water leakage → Maintenance → High Priority
+
+broken fan → Electrical → Medium Priority
+
+wifi problem → IT Support → Medium Priority
+
+==================================================
+
+ISSUE STATUS FLOW
+
+Submitted
+→ Under Review
+→ Assigned
+→ In Progress
+→ Resolved
+
+Students can see a timeline view.
+
+==================================================
+
+BEFORE / AFTER PROOF
+
+When viewing resolved issues:
+
+Display:
+
+* Before Photo
+* After Photo
+* Resolution Notes
+
+==================================================
+
+RESOLUTION RATING
+
+After issue becomes resolved:
+
+Allow student to submit:
+
+* 1 to 5 Stars
+* Optional Comment
+
+Store ratings and show them later in analytics.
+
+==================================================
+
+MODULE 2: SOS EMERGENCY REPORTING
+
+Create a prominent SOS button.
+
+Emergency Types:
+
+* Medical Emergency
+* Fire
+* Security Threat
+* Electrical Hazard
+* Other
+
+Student submits emergency.
+
+Create emergency ticket.
+
+Store in local storage.
+
+Show confirmation message.
+
+==================================================
+
+MODULE 3: LOST & FOUND
+
+Students can:
+
+* Report Lost Item
+* Report Found Item
+
+Fields:
+
+* Item Name
+* Description
+* Photo
+* Location
+* Date
+
+Status Flow:
+
+Reported
+→ Matched
+→ Claimed
+
+Students can browse all lost and found items.
+
+==================================================
+
+MODULE 4: NOTIFICATION SYSTEM
+
+Create:
+
+* Notification Bell
+* Notification Center
+* Notification History Page
+
+Notifications include:
+
+* Issue Assigned
+* Status Changed
+* Issue Resolved
+* Booking Approved
+* Booking Rejected
+* New Event
+* New Notice
+* SOS Update
+
+Store notifications locally.
+
+==================================================
+
+Create complete UI, pages, forms, local data storage, validation, and responsive design.

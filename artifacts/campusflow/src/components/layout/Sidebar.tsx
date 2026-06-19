@@ -2,15 +2,21 @@ import { Link, useLocation } from "wouter";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 import {
+  AlertTriangle,
   LayoutDashboard,
+  Package,
   Users,
   Settings,
   BookOpen,
   Wrench,
   User,
-  GraduationCap
+  GraduationCap,
+  MessageSquareWarning,
+  Bell,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useNotifications } from "@/contexts/NotificationContext";
+import { Badge } from "@/components/ui/badge";
 
 interface SidebarProps {
   onNavClick?: () => void;
@@ -19,6 +25,7 @@ interface SidebarProps {
 export function Sidebar({ onNavClick }: SidebarProps) {
   const { user } = useAuth();
   const [location] = useLocation();
+  const { unreadCount } = useNotifications();
 
   if (!user) return null;
 
@@ -29,6 +36,15 @@ export function Sidebar({ onNavClick }: SidebarProps) {
       case "student":
         return [
           { name: "Dashboard", href: "/dashboard/student", icon: LayoutDashboard },
+          { name: "My Issues", href: "/student/issues", icon: MessageSquareWarning },
+          { name: "SOS Emergency", href: "/student/sos", icon: AlertTriangle },
+          { name: "Lost & Found", href: "/student/lost-found", icon: Package },
+          {
+            name: "Notifications",
+            href: "/student/notifications",
+            icon: Bell,
+            badge: unreadCount > 0 ? unreadCount : undefined,
+          },
           { name: "Profile", href: "/profile", icon: User },
         ];
       case "faculty":
@@ -62,7 +78,7 @@ export function Sidebar({ onNavClick }: SidebarProps) {
       <div className="px-6 mb-4 md:hidden">
         <span className="text-xl font-bold tracking-tight gradient-text">CampusFlow</span>
       </div>
-      
+
       <div className="flex-1 px-3 space-y-1">
         {navItems.map((item) => {
           const isActive = location === item.href || location.startsWith(`${item.href}/`);
@@ -72,12 +88,17 @@ export function Sidebar({ onNavClick }: SidebarProps) {
                 variant={isActive ? "secondary" : "ghost"}
                 className={cn(
                   "w-full justify-start gap-3 h-11 transition-all",
-                  isActive ? "bg-primary/10 text-primary hover:bg-primary/20" : "hover:bg-white/5"
+                  isActive ? "bg-primary/10 text-primary hover:bg-primary/20" : "hover:bg-white/5",
                 )}
                 onClick={onNavClick}
               >
-                <item.icon className="h-5 w-5" />
-                <span className="font-medium">{item.name}</span>
+                <item.icon className="h-5 w-5 flex-shrink-0" />
+                <span className="font-medium flex-1 text-left">{item.name}</span>
+                {"badge" in item && item.badge ? (
+                  <Badge className="h-5 min-w-5 px-1.5 text-xs bg-primary text-primary-foreground flex items-center justify-center">
+                    {item.badge > 99 ? "99+" : item.badge}
+                  </Badge>
+                ) : null}
               </Button>
             </Link>
           );

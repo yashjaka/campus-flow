@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider, ProtectedRoute } from "@/contexts/AuthContext";
+import { NotificationProvider } from "@/contexts/NotificationContext";
 import NotFound from "@/pages/not-found";
 
 import LandingPage from "@/pages/landing";
@@ -17,6 +18,10 @@ import MaintenanceDashboard from "@/pages/dashboard-maintenance";
 import AdminDashboard from "@/pages/dashboard-admin";
 import AdminStudents from "@/pages/admin-students";
 import AdminStaff from "@/pages/admin-staff";
+import StudentIssues from "@/pages/student-issues";
+import StudentSos from "@/pages/student-sos";
+import StudentLostFound from "@/pages/student-lost-found";
+import StudentNotifications from "@/pages/student-notifications";
 
 const queryClient = new QueryClient();
 
@@ -28,7 +33,7 @@ function Router() {
       <Route path="/login/student" component={StudentLogin} />
       <Route path="/login/staff" component={StaffLogin} />
       <Route path="/login/admin" component={AdminLogin} />
-      
+
       {/* Protected Routes */}
       <Route path="/dashboard/student">
         {() => <ProtectedRoute component={StudentDashboard} role="student" />}
@@ -49,6 +54,20 @@ function Router() {
         {() => <ProtectedRoute component={AdminStaff} role="admin" />}
       </Route>
 
+      {/* Student Modules */}
+      <Route path="/student/issues">
+        {() => <ProtectedRoute component={StudentIssues} role="student" />}
+      </Route>
+      <Route path="/student/sos">
+        {() => <ProtectedRoute component={StudentSos} role="student" />}
+      </Route>
+      <Route path="/student/lost-found">
+        {() => <ProtectedRoute component={StudentLostFound} role="student" />}
+      </Route>
+      <Route path="/student/notifications">
+        {() => <ProtectedRoute component={StudentNotifications} role="student" />}
+      </Route>
+
       <Route component={NotFound} />
     </Switch>
   );
@@ -61,7 +80,9 @@ function App() {
         <TooltipProvider>
           <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
             <AuthProvider>
-              <Router />
+              <NotificationProvider>
+                <Router />
+              </NotificationProvider>
             </AuthProvider>
           </WouterRouter>
           <Toaster />
