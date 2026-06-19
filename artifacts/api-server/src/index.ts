@@ -1,35 +1,21 @@
 import app from "./app.js";
 import { logger } from "./lib/logger.js";
-import { connectMongoDB } from "./lib/mongodb.js";
 
 const rawPort = process.env["PORT"];
 
 if (!rawPort) {
-  throw new Error(
-    "PORT environment variable is required but was not provided.",
-  );
+  throw new Error("PORT environment variable is required but was not provided.");
 }
 
 const port = Number(rawPort);
-
 if (Number.isNaN(port) || port <= 0) {
   throw new Error(`Invalid PORT value: "${rawPort}"`);
 }
 
-async function start() {
-  try {
-    await connectMongoDB();
-  } catch (err) {
-    logger.error({ err }, "Failed to connect to MongoDB — server will still start but DB routes will fail");
+app.listen(port, (err) => {
+  if (err) {
+    logger.error({ err }, "Error listening on port");
+    process.exit(1);
   }
-
-  app.listen(port, (err) => {
-    if (err) {
-      logger.error({ err }, "Error listening on port");
-      process.exit(1);
-    }
-    logger.info({ port }, "Server listening");
-  });
-}
-
-start();
+  logger.info({ port }, "Server listening — using in-memory demo store");
+});

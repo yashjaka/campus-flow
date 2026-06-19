@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import type { UserRole } from "../models/User.js";
+import type { UserRole } from "../lib/store.js";
 
 export interface JwtPayload {
   userId: string;
@@ -16,10 +16,10 @@ declare global {
   }
 }
 
+const DEMO_SECRET = "campusflow-demo-secret-key-not-for-production";
+
 function getJwtSecret(): string {
-  const secret = process.env["JWT_SECRET"];
-  if (!secret) throw new Error("JWT_SECRET environment variable is required");
-  return secret;
+  return process.env["JWT_SECRET"] ?? DEMO_SECRET;
 }
 
 export function signToken(payload: JwtPayload): string {
