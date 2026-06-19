@@ -1,0 +1,133 @@
+Implement all staff and admin features in CampusFlow.
+
+Use local JSON files or browser localStorage.
+
+==================================================
+
+ROLES
+
+Campus Admin
+
+Faculty
+
+Maintenance Staff
+
+==================================================
+
+COMPLAINT MANAGEMENT
+
+Create complaint management page.
+
+Features:
+
+* View All Complaints
+* Search Complaints
+* Filter Complaints
+* View Complaint Details
+* Assign Staff
+* Update Status
+* Upload Resolution Photos
+* Add Resolution Notes
+
+==================================================
+
+STAFF ASSIGNMENT
+
+Fix and implement assigned staff dropdown.
+
+Dropdown should show:
+
+* Faculty Members
+* Maintenance Staff Members
+
+Allow assigning complaint to a staff member.
+
+==================================================
+
+STATUS MANAGEMENT
+
+Allow:
+
+Faculty
+Maintenance Staff
+Campus Admin
+
+to change complaint status.
+
+Status:
+
+Submitted
+Under Review
+Assigned
+In Progress
+Resolved
+
+==================================================
+
+NOTIFICATION AUTOMATION
+
+Whenever complaint status changes:
+
+Automatically create notification for student.
+
+Example:
+
+Complaint #CMP102
+
+Water Leakage
+
+Status Changed:
+
+Assigned → In Progress
+
+Updated By:
+
+Maintenance Staff
+
+==================================================
+
+USER MANAGEMENT
+
+Campus Admin can:
+
+* View Users
+* Create Users
+* Disable Users
+* View Role Information
+
+==================================================
+
+STAFF DASHBOARD
+
+Maintenance Staff should see:
+
+* Assigned Tasks
+* Pending Tasks
+* Completed Tasks
+* Resolution Upload Section
+
+==================================================
+
+FACULTY DASHBOARD
+
+Faculty should see:
+
+* Complaints
+* Bookings
+* Events
+* Notices
+* Surveys
+
+==================================================
+
+ADMIN DASHBOARD
+
+Campus Admin should see:
+
+* Complaint Statistics
+* User Statistics
+* Booking Statistics
+* Event Statistics
+* Recent Activity
+
+Create responsive modern SaaS UI.

@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider, ProtectedRoute } from "@/contexts/AuthContext";
 import { NotificationProvider } from "@/contexts/NotificationContext";
+import { initCampusStore } from "@/lib/campus-store";
 import NotFound from "@/pages/not-found";
 
 import LandingPage from "@/pages/landing";
@@ -22,6 +23,16 @@ import StudentIssues from "@/pages/student-issues";
 import StudentSos from "@/pages/student-sos";
 import StudentLostFound from "@/pages/student-lost-found";
 import StudentNotifications from "@/pages/student-notifications";
+import StudentBooking from "@/pages/student-booking";
+import Complaints from "@/pages/complaints";
+import AdminUserMgmt from "@/pages/admin-user-mgmt";
+import BookingManage from "@/pages/booking-manage";
+import Events from "@/pages/events";
+import Notices from "@/pages/notices";
+import Surveys from "@/pages/surveys";
+
+// Seed demo data on first load
+initCampusStore();
 
 const queryClient = new QueryClient();
 
@@ -34,7 +45,7 @@ function Router() {
       <Route path="/login/staff" component={StaffLogin} />
       <Route path="/login/admin" component={AdminLogin} />
 
-      {/* Protected Routes */}
+      {/* Role Dashboards */}
       <Route path="/dashboard/student">
         {() => <ProtectedRoute component={StudentDashboard} role="student" />}
       </Route>
@@ -47,11 +58,16 @@ function Router() {
       <Route path="/dashboard/admin">
         {() => <ProtectedRoute component={AdminDashboard} role="admin" />}
       </Route>
+
+      {/* Admin-specific */}
       <Route path="/admin/students">
         {() => <ProtectedRoute component={AdminStudents} role="admin" />}
       </Route>
       <Route path="/admin/staff">
         {() => <ProtectedRoute component={AdminStaff} role="admin" />}
+      </Route>
+      <Route path="/admin/users">
+        {() => <ProtectedRoute component={AdminUserMgmt} role="admin" />}
       </Route>
 
       {/* Student Modules */}
@@ -66,6 +82,26 @@ function Router() {
       </Route>
       <Route path="/student/notifications">
         {() => <ProtectedRoute component={StudentNotifications} role="student" />}
+      </Route>
+      <Route path="/student/booking">
+        {() => <ProtectedRoute component={StudentBooking} role="student" />}
+      </Route>
+
+      {/* Shared Modules (auth required, role checked inside) */}
+      <Route path="/complaints">
+        {() => <ProtectedRoute component={Complaints} />}
+      </Route>
+      <Route path="/bookings/manage">
+        {() => <ProtectedRoute component={BookingManage} />}
+      </Route>
+      <Route path="/events">
+        {() => <ProtectedRoute component={Events} />}
+      </Route>
+      <Route path="/notices">
+        {() => <ProtectedRoute component={Notices} />}
+      </Route>
+      <Route path="/surveys">
+        {() => <ProtectedRoute component={Surveys} />}
       </Route>
 
       <Route component={NotFound} />

@@ -1,0 +1,3 @@
+- [Campus store architecture](campus-store.md) — all non-auth shared data (bookings, events, notices, surveys, users) lives in localStorage via campus-store.ts, seeded once via initCampusStore() called in App.tsx.
+- [Complaint management pattern](complaints-pattern.md) — single shared /complaints page adapts by role: admin=full CRUD, faculty=status+notes, maintenance=only their assigned issues filtered by name match.
+- [Notification wiring](notification-wiring.md) — status changes on issues call notificationStore.add({ userId: issue.studentId }) to target the submitting student; userId:'broadcast' used for events/notices to all.

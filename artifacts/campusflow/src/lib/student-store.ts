@@ -26,6 +26,7 @@ export interface Issue {
   photoBase64?: string;
   afterPhotoBase64?: string;
   resolutionNotes?: string;
+  assignedTo?: { id: string; name: string; role: string };
   status: IssueStatus;
   statusHistory: Array<{ status: IssueStatus; timestamp: string; note?: string }>;
   rating?: { stars: number; comment: string };

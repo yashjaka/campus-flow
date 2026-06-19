@@ -2,25 +2,17 @@ import { Link, useLocation } from "wouter";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 import {
-  AlertTriangle,
-  LayoutDashboard,
-  Package,
-  Users,
-  Settings,
-  BookOpen,
-  Wrench,
-  User,
-  GraduationCap,
-  MessageSquareWarning,
-  Bell,
+  AlertTriangle, BarChart2, BookOpen, CalendarDays, ClipboardList,
+  GraduationCap, LayoutDashboard, Megaphone, MessageSquareWarning,
+  Package, Settings, Users, Bell, Wrench,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNotifications } from "@/contexts/NotificationContext";
 import { Badge } from "@/components/ui/badge";
 
-interface SidebarProps {
-  onNavClick?: () => void;
-}
+interface NavItem { name: string; href: string; icon: React.ComponentType<{ className?: string }>; badge?: number; }
+
+interface SidebarProps { onNavClick?: () => void; }
 
 export function Sidebar({ onNavClick }: SidebarProps) {
   const { user } = useAuth();
@@ -31,7 +23,13 @@ export function Sidebar({ onNavClick }: SidebarProps) {
 
   const role = user.role;
 
-  const getNavItems = () => {
+  const sharedModules: NavItem[] = [
+    { name: "Events", href: "/events", icon: BookOpen },
+    { name: "Notice Board", href: "/notices", icon: Megaphone },
+    { name: "Surveys", href: "/surveys", icon: BarChart2 },
+  ];
+
+  const getNavItems = (): NavItem[] => {
     switch (role) {
       case "student":
         return [
@@ -39,32 +37,32 @@ export function Sidebar({ onNavClick }: SidebarProps) {
           { name: "My Issues", href: "/student/issues", icon: MessageSquareWarning },
           { name: "SOS Emergency", href: "/student/sos", icon: AlertTriangle },
           { name: "Lost & Found", href: "/student/lost-found", icon: Package },
-          {
-            name: "Notifications",
-            href: "/student/notifications",
-            icon: Bell,
-            badge: unreadCount > 0 ? unreadCount : undefined,
-          },
-          { name: "Profile", href: "/profile", icon: User },
+          { name: "Resource Booking", href: "/student/booking", icon: CalendarDays },
+          ...sharedModules,
+          { name: "Notifications", href: "/student/notifications", icon: Bell, badge: unreadCount > 0 ? unreadCount : undefined },
         ];
       case "faculty":
         return [
           { name: "Dashboard", href: "/dashboard/faculty", icon: LayoutDashboard },
-          { name: "My Classes", href: "/classes", icon: BookOpen },
-          { name: "Profile", href: "/profile", icon: User },
+          { name: "Complaints", href: "/complaints", icon: MessageSquareWarning },
+          { name: "Booking Approvals", href: "/bookings/manage", icon: CalendarDays },
+          ...sharedModules,
         ];
       case "maintenance":
         return [
           { name: "Dashboard", href: "/dashboard/maintenance", icon: LayoutDashboard },
-          { name: "Tasks", href: "/tasks", icon: Wrench },
-          { name: "Profile", href: "/profile", icon: User },
+          { name: "My Tasks", href: "/complaints", icon: Wrench },
+          ...sharedModules,
         ];
       case "admin":
         return [
           { name: "Dashboard", href: "/dashboard/admin", icon: LayoutDashboard },
+          { name: "Complaints", href: "/complaints", icon: MessageSquareWarning },
+          { name: "User Management", href: "/admin/users", icon: Users },
+          { name: "Booking Approvals", href: "/bookings/manage", icon: CalendarDays },
+          ...sharedModules,
           { name: "Students", href: "/admin/students", icon: GraduationCap },
-          { name: "Staff", href: "/admin/staff", icon: Users },
-          { name: "Settings", href: "/admin/settings", icon: Settings },
+          { name: "Staff", href: "/admin/staff", icon: ClipboardList },
         ];
       default:
         return [];
@@ -94,7 +92,7 @@ export function Sidebar({ onNavClick }: SidebarProps) {
               >
                 <item.icon className="h-5 w-5 flex-shrink-0" />
                 <span className="font-medium flex-1 text-left">{item.name}</span>
-                {"badge" in item && item.badge ? (
+                {item.badge ? (
                   <Badge className="h-5 min-w-5 px-1.5 text-xs bg-primary text-primary-foreground flex items-center justify-center">
                     {item.badge > 99 ? "99+" : item.badge}
                   </Badge>
