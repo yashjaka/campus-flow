@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider, ProtectedRoute } from "@/contexts/AuthContext";
 import { NotificationProvider } from "@/contexts/NotificationContext";
 import { initCampusStore } from "@/lib/campus-store";
+import { initStudentStore } from "@/lib/student-store";
 import NotFound from "@/pages/not-found";
 
 import LandingPage from "@/pages/landing";
@@ -30,9 +31,11 @@ import BookingManage from "@/pages/booking-manage";
 import Events from "@/pages/events";
 import Notices from "@/pages/notices";
 import Surveys from "@/pages/surveys";
+import Analytics from "@/pages/analytics";
 
 // Seed demo data on first load
 initCampusStore();
+initStudentStore();
 
 const queryClient = new QueryClient();
 
@@ -102,6 +105,9 @@ function Router() {
       </Route>
       <Route path="/surveys">
         {() => <ProtectedRoute component={Surveys} />}
+      </Route>
+      <Route path="/analytics">
+        {() => <ProtectedRoute component={Analytics} />}
       </Route>
 
       <Route component={NotFound} />

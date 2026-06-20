@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import {
   AlertTriangle, BarChart2, BookOpen, CalendarDays, ClipboardList,
   GraduationCap, LayoutDashboard, Megaphone, MessageSquareWarning,
-  Package, Settings, Users, Bell, Wrench,
+  Package, TrendingUp, Users, Bell, Wrench,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNotifications } from "@/contexts/NotificationContext";
@@ -47,6 +47,7 @@ export function Sidebar({ onNavClick }: SidebarProps) {
           { name: "Complaints", href: "/complaints", icon: MessageSquareWarning },
           { name: "Booking Approvals", href: "/bookings/manage", icon: CalendarDays },
           ...sharedModules,
+          { name: "Analytics", href: "/analytics", icon: TrendingUp },
         ];
       case "maintenance":
         return [
@@ -57,6 +58,7 @@ export function Sidebar({ onNavClick }: SidebarProps) {
       case "admin":
         return [
           { name: "Dashboard", href: "/dashboard/admin", icon: LayoutDashboard },
+          { name: "Analytics", href: "/analytics", icon: TrendingUp },
           { name: "Complaints", href: "/complaints", icon: MessageSquareWarning },
           { name: "User Management", href: "/admin/users", icon: Users },
           { name: "Booking Approvals", href: "/bookings/manage", icon: CalendarDays },
