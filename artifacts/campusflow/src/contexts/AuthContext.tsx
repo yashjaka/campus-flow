@@ -1,6 +1,15 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { useLocation } from "wouter";
-import { UserProfile } from "@workspace/api-client-react";
+import { UserProfile, setAuthTokenGetter } from "@workspace/api-client-react";
+
+// Register the bearer token getter dynamically for the generated API client hooks
+setAuthTokenGetter(() => {
+  try {
+    return localStorage.getItem("campusflow_token");
+  } catch {
+    return null;
+  }
+});
 
 interface AuthContextType {
   user: UserProfile | null;

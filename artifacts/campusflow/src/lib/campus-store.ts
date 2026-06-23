@@ -8,7 +8,7 @@ export type UserRole = 'student' | 'faculty' | 'maintenance' | 'admin';
 
 export interface CampusUser {
   id: string; name: string; email: string; role: UserRole;
-  department?: string; enrollmentNumber?: string; isActive: boolean; createdAt: string;
+  department?: string; enrollmentNumber?: string; collegeName?: string; semester?: number; isActive: boolean; createdAt: string;
 }
 export interface Booking {
   id: string; studentId: string; studentName: string; resource: string;
