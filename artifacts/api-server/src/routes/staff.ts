@@ -15,7 +15,9 @@ router.post("/staff", requireAuth, requireAdmin, async (req, res) => {
   try {
     const parsed = CreateStaffBody.safeParse(req.body);
     if (!parsed.success) {
-      res.status(400).json({ error: "Invalid request body", details: parsed.error.issues });
+      res
+        .status(400)
+        .json({ error: "Invalid request body", details: parsed.error.issues });
       return;
     }
 
@@ -66,12 +68,17 @@ router.patch("/staff/:id", requireAuth, requireAdmin, (req, res) => {
     const id = req.params["id"] as string;
     const parsed = UpdateStaffBody.safeParse(req.body);
     if (!parsed.success) {
-      res.status(400).json({ error: "Invalid request body", details: parsed.error.issues });
+      res
+        .status(400)
+        .json({ error: "Invalid request body", details: parsed.error.issues });
       return;
     }
 
     const member = store.findUserById(id);
-    if (!member || (member.role !== "faculty" && member.role !== "maintenance")) {
+    if (
+      !member ||
+      (member.role !== "faculty" && member.role !== "maintenance")
+    ) {
       res.status(404).json({ error: "Staff member not found" });
       return;
     }

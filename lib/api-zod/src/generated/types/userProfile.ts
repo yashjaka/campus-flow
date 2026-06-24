@@ -5,7 +5,7 @@
  * CampusFlow API
  * OpenAPI spec version: 0.1.0
  */
-import type { UserProfileRole } from './userProfileRole';
+import type { UserProfileRole } from "./userProfileRole";
 
 export interface UserProfile {
   id: string;

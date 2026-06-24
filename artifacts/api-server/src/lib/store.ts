@@ -39,7 +39,7 @@ const seedDate = (daysAgo: number) =>
 
 const users: StoreUser[] = [
   {
-    id: randomUUID(),
+    id: "cu-admin-1",
     name: "Campus Admin",
     role: "admin",
     email: "admin@campusflow.demo",
@@ -48,7 +48,7 @@ const users: StoreUser[] = [
     createdAt: seedDate(30),
   },
   {
-    id: randomUUID(),
+    id: "cu-fac-1",
     name: "Dr. Sarah Mitchell",
     role: "faculty",
     email: "sarah.mitchell@campusflow.demo",
@@ -58,7 +58,7 @@ const users: StoreUser[] = [
     createdAt: seedDate(25),
   },
   {
-    id: randomUUID(),
+    id: "cu-fac-2",
     name: "Prof. James Carter",
     role: "faculty",
     email: "james.carter@campusflow.demo",
@@ -68,7 +68,7 @@ const users: StoreUser[] = [
     createdAt: seedDate(20),
   },
   {
-    id: randomUUID(),
+    id: "cu-mnt-1",
     name: "Carlos Rivera",
     role: "maintenance",
     email: "carlos.rivera@campusflow.demo",
@@ -77,7 +77,7 @@ const users: StoreUser[] = [
     createdAt: seedDate(18),
   },
   {
-    id: randomUUID(),
+    id: "cu-std-1",
     name: "Priya Sharma",
     role: "student",
     enrollmentNumber: "ENR2024001",
@@ -88,45 +88,45 @@ const users: StoreUser[] = [
     createdAt: seedDate(10),
   },
   {
-    id: randomUUID(),
-    name: "Marcus Johnson",
+    id: "cu-std-2",
+    name: "Arjun Verma",
     role: "student",
     enrollmentNumber: "ENR2024002",
     collegeName: "State University of Technology",
-    department: "Electronics Engineering",
+    department: "Computer Engineering",
     semester: 2,
     isActive: true,
     createdAt: seedDate(8),
   },
   {
-    id: randomUUID(),
-    name: "Aisha Patel",
+    id: "cu-std-3",
+    name: "Meera Nair",
     role: "student",
     enrollmentNumber: "ENR2024003",
     collegeName: "State University of Technology",
-    department: "Business Administration",
+    department: "Information Technology",
     semester: 6,
     isActive: true,
     createdAt: seedDate(5),
   },
   {
-    id: randomUUID(),
-    name: "Liam Chen",
+    id: "cu-std-4",
+    name: "Rahul Singh",
     role: "student",
     enrollmentNumber: "ENR2024004",
     collegeName: "State University of Technology",
-    department: "Computer Science",
+    department: "Mechanical Engineering",
     semester: 1,
     isActive: true,
     createdAt: seedDate(3),
   },
   {
-    id: randomUUID(),
-    name: "Sofia Torres",
+    id: "cu-std-5",
+    name: "Ananya Bose",
     role: "student",
     enrollmentNumber: "ENR2024005",
     collegeName: "State University of Technology",
-    department: "Physics",
+    department: "Electrical Engineering",
     semester: 3,
     isActive: true,
     createdAt: seedDate(1),
@@ -137,14 +137,14 @@ const activityLogs: StoreActivityLog[] = [
   {
     id: randomUUID(),
     type: "student_registered",
-    description: "Student Sofia Torres (ENR2024005) registered",
+    description: "Student Ananya Bose (ENR2024005) registered",
     actor: "Campus Admin",
     timestamp: seedDate(1),
   },
   {
     id: randomUUID(),
     type: "student_registered",
-    description: "Student Liam Chen (ENR2024004) registered",
+    description: "Student Rahul Singh (ENR2024004) registered",
     actor: "Campus Admin",
     timestamp: seedDate(3),
   },
@@ -158,7 +158,7 @@ const activityLogs: StoreActivityLog[] = [
   {
     id: randomUUID(),
     type: "student_registered",
-    description: "Student Aisha Patel (ENR2024003) registered",
+    description: "Student Meera Nair (ENR2024003) registered",
     actor: "Campus Admin",
     timestamp: seedDate(5),
   },
@@ -180,12 +180,17 @@ export const store = {
   },
 
   findUserByEmail(email: string): StoreUser | undefined {
-    return users.find((u) => u.email?.toLowerCase() === email.toLowerCase() && u.isActive);
+    return users.find(
+      (u) => u.email?.toLowerCase() === email.toLowerCase() && u.isActive,
+    );
   },
 
   findStudentByEnrollment(enrollmentNumber: string): StoreUser | undefined {
     return users.find(
-      (u) => u.enrollmentNumber === enrollmentNumber && u.role === "student" && u.isActive,
+      (u) =>
+        u.enrollmentNumber === enrollmentNumber &&
+        u.role === "student" &&
+        u.isActive,
     );
   },
 
@@ -207,19 +212,31 @@ export const store = {
   },
 
   getStudents(): StoreUser[] {
-    return users.filter((u) => u.role === "student").sort(
-      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-    );
+    return users
+      .filter((u) => u.role === "student")
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      );
   },
 
   getStaff(): StoreUser[] {
     return users
       .filter((u) => u.role === "faculty" || u.role === "maintenance")
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      );
   },
 
-  addActivityLog(data: Omit<StoreActivityLog, "id" | "timestamp">): StoreActivityLog {
-    const log: StoreActivityLog = { ...data, id: randomUUID(), timestamp: now() };
+  addActivityLog(
+    data: Omit<StoreActivityLog, "id" | "timestamp">,
+  ): StoreActivityLog {
+    const log: StoreActivityLog = {
+      ...data,
+      id: randomUUID(),
+      timestamp: now(),
+    };
     activityLogs.unshift(log);
     return log;
   },

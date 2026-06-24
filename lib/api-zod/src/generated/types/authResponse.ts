@@ -5,7 +5,7 @@
  * CampusFlow API
  * OpenAPI spec version: 0.1.0
  */
-import type { UserProfile } from './userProfile';
+import type { UserProfile } from "./userProfile";
 
 export interface AuthResponse {
   token: string;

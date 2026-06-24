@@ -15,10 +15,18 @@ export function requireRole(...roles: UserRole[]) {
   };
 }
 
-export function requireAdmin(req: Request, res: Response, next: NextFunction): void {
+export function requireAdmin(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): void {
   requireRole("admin")(req, res, next);
 }
 
-export function requireStaff(req: Request, res: Response, next: NextFunction): void {
+export function requireStaff(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): void {
   requireRole("faculty", "maintenance", "admin")(req, res, next);
 }

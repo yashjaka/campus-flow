@@ -6,8 +6,9 @@ description: How the shared /complaints page works across roles
 Single page `artifacts/campusflow/src/pages/complaints.tsx` handles complaints for all staff roles.
 
 **Role behavior:**
+
 - admin: sees all issues, can assign staff (from campusUserStore.getStaff()), update any status, upload after photo, add resolution notes
-- faculty: sees all issues, can update status + add notes  
+- faculty: sees all issues, can update status + add notes
 - maintenance: sees ONLY issues where `issue.assignedTo?.name === user.name` (name-based match, not ID)
 - student: redirected away (useEffect redirect to /dashboard/student)
 

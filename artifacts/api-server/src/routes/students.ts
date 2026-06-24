@@ -14,11 +14,14 @@ router.post("/students", requireAuth, requireAdmin, async (req, res) => {
   try {
     const parsed = CreateStudentBody.safeParse(req.body);
     if (!parsed.success) {
-      res.status(400).json({ error: "Invalid request body", details: parsed.error.issues });
+      res
+        .status(400)
+        .json({ error: "Invalid request body", details: parsed.error.issues });
       return;
     }
 
-    const { name, enrollmentNumber, collegeName, department, semester } = parsed.data;
+    const { name, enrollmentNumber, collegeName, department, semester } =
+      parsed.data;
 
     const existing = store.findStudentByEnrollment(enrollmentNumber);
     if (existing) {
@@ -65,7 +68,9 @@ router.patch("/students/:id", requireAuth, requireAdmin, (req, res) => {
     const id = req.params["id"] as string;
     const parsed = UpdateStudentBody.safeParse(req.body);
     if (!parsed.success) {
-      res.status(400).json({ error: "Invalid request body", details: parsed.error.issues });
+      res
+        .status(400)
+        .json({ error: "Invalid request body", details: parsed.error.issues });
       return;
     }
 

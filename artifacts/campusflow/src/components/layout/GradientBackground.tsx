@@ -5,7 +5,7 @@ export function GradientBackground({ children }: { children?: ReactNode }) {
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-background">
       <div className="absolute inset-0 gradient-bg pointer-events-none" />
-      
+
       {/* Animated gradient orbs */}
       <motion.div
         animate={{
@@ -25,7 +25,7 @@ export function GradientBackground({ children }: { children?: ReactNode }) {
         transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
         className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-purple-500/20 blur-[120px] pointer-events-none"
       />
-      
+
       <div className="relative z-10 w-full min-h-screen flex flex-col">
         {children}
       </div>

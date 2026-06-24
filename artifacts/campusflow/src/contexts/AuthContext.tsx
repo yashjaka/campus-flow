@@ -1,4 +1,10 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
 import { useLocation } from "wouter";
 import { UserProfile, setAuthTokenGetter } from "@workspace/api-client-react";
 
@@ -26,7 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const savedUser = localStorage.getItem("campusflow_user");
     return savedUser ? JSON.parse(savedUser) : null;
   });
-  
+
   const [token, setToken] = useState<string | null>(() => {
     return localStorage.getItem("campusflow_token");
   });
@@ -49,7 +55,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, isAuthenticated: !!token }}>
+    <AuthContext.Provider
+      value={{ user, token, login, logout, isAuthenticated: !!token }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -63,7 +71,15 @@ export function useAuth() {
   return context;
 }
 
-export function ProtectedRoute({ component: Component, role, ...rest }: { component: any, role?: string, [key: string]: any }) {
+export function ProtectedRoute({
+  component: Component,
+  role,
+  ...rest
+}: {
+  component: any;
+  role?: string;
+  [key: string]: any;
+}) {
   const { isAuthenticated, user } = useAuth();
   const [, setLocation] = useLocation();
 

@@ -5,7 +5,7 @@
  * CampusFlow API
  * OpenAPI spec version: 0.1.0
  */
-import type { StaffMemberRole } from './staffMemberRole';
+import type { StaffMemberRole } from "./staffMemberRole";
 
 export interface StaffMember {
   id: string;

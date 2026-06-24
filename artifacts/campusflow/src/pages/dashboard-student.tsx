@@ -81,47 +81,75 @@ export default function StudentDashboard() {
     <DashboardLayout>
       <div className="space-y-8">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Welcome, {user?.name}</h1>
-          <p className="text-muted-foreground mt-1">Here's your campus overview.</p>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Welcome, {user?.name}
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Here's your campus overview.
+          </p>
         </div>
 
         {/* Academic Stats */}
         <div className="grid gap-4 md:grid-cols-3">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+          >
             <Card className="glass-card">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Enrolled Courses</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Enrolled Courses
+                </CardTitle>
                 <BookOpen className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">5</div>
-                <p className="text-xs text-muted-foreground mt-1">Current semester</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Current semester
+                </p>
               </CardContent>
             </Card>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
             <Card className="glass-card">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Upcoming Assignments</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Upcoming Assignments
+                </CardTitle>
                 <Calendar className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">3</div>
-                <p className="text-xs text-muted-foreground mt-1">Due this week</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Due this week
+                </p>
               </CardContent>
             </Card>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
             <Card className="glass-card">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Next Class</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Next Class
+                </CardTitle>
                 <Clock className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">10:00 AM</div>
-                <p className="text-xs text-muted-foreground mt-1">Computer Science 101</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Computer Science 101
+                </p>
               </CardContent>
             </Card>
           </motion.div>
@@ -139,18 +167,26 @@ export default function StudentDashboard() {
                 transition={{ delay: 0.1 + i * 0.08 }}
               >
                 <Link href={mod.href}>
-                  <Card className={`glass-card cursor-pointer transition-all border-transparent hover:border-white/10 ${mod.bg}`}>
+                  <Card
+                    className={`glass-card cursor-pointer transition-all border-transparent hover:border-white/10 ${mod.bg}`}
+                  >
                     <CardContent className="p-4">
                       <div className="flex items-start justify-between mb-3">
-                        <div className={`w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center`}>
+                        <div
+                          className={`w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center`}
+                        >
                           <mod.icon className={`h-5 w-5 ${mod.color}`} />
                         </div>
                         {mod.stat && (
-                          <Badge className="text-xs bg-white/10 text-foreground">{mod.stat}</Badge>
+                          <Badge className="text-xs bg-white/10 text-foreground">
+                            {mod.stat}
+                          </Badge>
                         )}
                       </div>
                       <h3 className="font-semibold text-sm">{mod.name}</h3>
-                      <p className="text-xs text-muted-foreground mt-0.5">{mod.description}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {mod.description}
+                      </p>
                     </CardContent>
                   </Card>
                 </Link>
@@ -161,7 +197,11 @@ export default function StudentDashboard() {
 
         {/* Recent Issues */}
         {recentIssues.length > 0 && (
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+          >
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-lg font-semibold">Recent Issues</h2>
               <Link href="/student/issues">
@@ -182,11 +222,17 @@ export default function StudentDashboard() {
                           </div>
                           <div>
                             <p className="text-sm font-medium">{issue.title}</p>
-                            <p className="text-xs text-muted-foreground">{issue.location}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {issue.location}
+                            </p>
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Badge className={`text-xs ${statusColor[issue.status] ?? ""}`}>{issue.status}</Badge>
+                          <Badge
+                            className={`text-xs ${statusColor[issue.status] ?? ""}`}
+                          >
+                            {issue.status}
+                          </Badge>
                           <ChevronRight className="h-4 w-4 text-muted-foreground" />
                         </div>
                       </div>
@@ -199,7 +245,11 @@ export default function StudentDashboard() {
         )}
 
         {/* Quick SOS */}
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+        >
           <Card className="glass-card border-red-500/20">
             <CardContent className="p-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -208,11 +258,16 @@ export default function StudentDashboard() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-sm">Campus Emergency?</h3>
-                  <p className="text-xs text-muted-foreground">Tap SOS to alert campus security instantly.</p>
+                  <p className="text-xs text-muted-foreground">
+                    Tap SOS to alert campus security instantly.
+                  </p>
                 </div>
               </div>
               <Link href="/student/sos">
-                <Button size="sm" className="bg-red-600 hover:bg-red-700 text-white font-bold">
+                <Button
+                  size="sm"
+                  className="bg-red-600 hover:bg-red-700 text-white font-bold"
+                >
                   SOS
                 </Button>
               </Link>

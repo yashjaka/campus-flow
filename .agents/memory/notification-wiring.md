@@ -12,6 +12,7 @@ Student notifications live in `artifacts/campusflow/src/lib/student-store.ts` �
 **Notification types defined in student-store.ts:** issue_assigned, status_changed, issue_resolved, sos_update, new_notice, lost_found_match, booking_approved, booking_rejected, new_event.
 
 **When notifications fire:**
+
 - Complaint status change → status_changed or issue_resolved (in complaints.tsx)
 - Booking approved/rejected → booking_approved / booking_rejected (in booking-manage.tsx)
 - New event published → new_event broadcast (in events.tsx)

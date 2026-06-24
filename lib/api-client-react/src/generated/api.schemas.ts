@@ -9,14 +9,14 @@ export interface HealthStatus {
   status: string;
 }
 
-export type UserProfileRole = typeof UserProfileRole[keyof typeof UserProfileRole];
-
+export type UserProfileRole =
+  (typeof UserProfileRole)[keyof typeof UserProfileRole];
 
 export const UserProfileRole = {
-  student: 'student',
-  faculty: 'faculty',
-  maintenance: 'maintenance',
-  admin: 'admin',
+  student: "student",
+  faculty: "faculty",
+  maintenance: "maintenance",
+  admin: "admin",
 } as const;
 
 export interface UserProfile {
@@ -91,12 +91,12 @@ export interface StudentUpdate {
   semester?: number;
 }
 
-export type StaffMemberRole = typeof StaffMemberRole[keyof typeof StaffMemberRole];
-
+export type StaffMemberRole =
+  (typeof StaffMemberRole)[keyof typeof StaffMemberRole];
 
 export const StaffMemberRole = {
-  faculty: 'faculty',
-  maintenance: 'maintenance',
+  faculty: "faculty",
+  maintenance: "maintenance",
 } as const;
 
 export interface StaffMember {
@@ -110,12 +110,12 @@ export interface StaffMember {
   createdAt: string;
 }
 
-export type StaffInputRole = typeof StaffInputRole[keyof typeof StaffInputRole];
-
+export type StaffInputRole =
+  (typeof StaffInputRole)[keyof typeof StaffInputRole];
 
 export const StaffInputRole = {
-  faculty: 'faculty',
-  maintenance: 'maintenance',
+  faculty: "faculty",
+  maintenance: "maintenance",
 } as const;
 
 export interface StaffInput {
@@ -149,4 +149,3 @@ export interface ActivityItem {
   actor: string;
   timestamp: string;
 }
-

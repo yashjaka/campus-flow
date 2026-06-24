@@ -4,8 +4,22 @@ import { useStudentEntry } from "@workspace/api-client-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { GradientBackground } from "@/components/layout/GradientBackground";
@@ -13,6 +27,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { GraduationCap, Loader2, ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
+import { campusUserStore } from "@/lib/campus-store";
 
 const studentLoginSchema = z.object({
   enrollmentNumber: z.string().min(3, "Enrollment number is required"),
@@ -32,16 +47,62 @@ export default function StudentLogin() {
   });
 
   const onSubmit = (values: z.infer<typeof studentLoginSchema>) => {
-    studentEntry.mutate({ data: values }, {
-      onSuccess: (response) => {
-        login(response.token, response.user);
-        toast({ title: "Welcome back", description: "Successfully logged in." });
-        setLocation("/dashboard/student");
+    studentEntry.mutate(
+      { data: values },
+      {
+        onSuccess: (response) => {
+          login(response.token, response.user);
+          toast({
+            title: "Welcome back",
+            description: "Successfully logged in.",
+          });
+          setLocation("/dashboard/student");
+        },
+        onError: (err: any) => {
+          if (err.status === 404 || err.message?.includes("not found")) {
+            toast({
+              title: "Creating sandbox student",
+              description:
+                "Enrollment not found. Auto-registering a profile in local storage.",
+            });
+            const localUser = campusUserStore.create({
+              name: `Student ${values.enrollmentNumber}`,
+              email: `${values.enrollmentNumber.toLowerCase()}@campusflow.demo`,
+              role: "student",
+              enrollmentNumber: values.enrollmentNumber,
+              collegeName: "State University of Technology",
+              department: "Computer Science",
+              semester: 4,
+              isActive: true,
+            });
+
+            login(`mock-token-${values.enrollmentNumber}`, {
+              id: localUser.id,
+              name: localUser.name,
+              role: "student",
+              email: localUser.email || null,
+              enrollmentNumber: localUser.enrollmentNumber || null,
+              collegeName: localUser.collegeName || null,
+              department: localUser.department || null,
+              semester: localUser.semester || null,
+              createdAt: localUser.createdAt,
+            });
+
+            toast({
+              title: "Welcome to CampusFlow",
+              description: `Logged in as ${localUser.name}`,
+            });
+            setLocation("/dashboard/student");
+          } else {
+            toast({
+              title: "Login failed",
+              description: err.message || "Invalid enrollment number.",
+              variant: "destructive",
+            });
+          }
+        },
       },
-      onError: (error: any) => {
-        toast({ title: "Login failed", description: error.message || "Invalid enrollment number.", variant: "destructive" });
-      }
-    });
+    );
   };
 
   return (
@@ -54,7 +115,10 @@ export default function StudentLogin() {
           className="w-full max-w-md"
         >
           <Link href="/">
-            <Button variant="ghost" className="mb-4 -ml-2 text-muted-foreground hover:text-foreground">
+            <Button
+              variant="ghost"
+              className="mb-4 -ml-2 text-muted-foreground hover:text-foreground"
+            >
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to home
             </Button>
@@ -66,14 +130,19 @@ export default function StudentLogin() {
                   <GraduationCap className="h-6 w-6" />
                 </div>
               </div>
-              <CardTitle className="text-2xl font-bold tracking-tight">Student Portal</CardTitle>
+              <CardTitle className="text-2xl font-bold tracking-tight">
+                Student Portal
+              </CardTitle>
               <CardDescription>
                 Enter your enrollment number to access your dashboard.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-4"
+                >
                   <FormField
                     control={form.control}
                     name="enrollmentNumber"
@@ -81,14 +150,24 @@ export default function StudentLogin() {
                       <FormItem>
                         <FormLabel>Enrollment Number</FormLabel>
                         <FormControl>
-                          <Input placeholder="STU-2023-001" {...field} className="bg-background/50 backdrop-blur-sm" />
+                          <Input
+                            placeholder="STU-2023-001"
+                            {...field}
+                            className="bg-background/50 backdrop-blur-sm"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white" disabled={studentEntry.isPending}>
-                    {studentEntry.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                  <Button
+                    type="submit"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                    disabled={studentEntry.isPending}
+                  >
+                    {studentEntry.isPending ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : null}
                     Access Portal
                   </Button>
                 </form>

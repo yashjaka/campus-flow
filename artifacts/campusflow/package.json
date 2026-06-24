@@ -7,6 +7,8 @@
     "dev": "vite --config vite.config.ts --host 0.0.0.0",
     "build": "vite build --config vite.config.ts",
     "serve": "vite preview --config vite.config.ts --host 0.0.0.0",
+    "preview": "vite preview --config vite.config.ts --host 0.0.0.0",
+    "lint": "prettier --check \"src/**/*.{ts,tsx,css}\" --ignore-path ../../.gitignore",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {

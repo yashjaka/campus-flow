@@ -56,7 +56,9 @@ function Router() {
         {() => <ProtectedRoute component={FacultyDashboard} role="faculty" />}
       </Route>
       <Route path="/dashboard/maintenance">
-        {() => <ProtectedRoute component={MaintenanceDashboard} role="maintenance" />}
+        {() => (
+          <ProtectedRoute component={MaintenanceDashboard} role="maintenance" />
+        )}
       </Route>
       <Route path="/dashboard/admin">
         {() => <ProtectedRoute component={AdminDashboard} role="admin" />}
@@ -84,7 +86,9 @@ function Router() {
         {() => <ProtectedRoute component={StudentLostFound} role="student" />}
       </Route>
       <Route path="/student/notifications">
-        {() => <ProtectedRoute component={StudentNotifications} role="student" />}
+        {() => (
+          <ProtectedRoute component={StudentNotifications} role="student" />
+        )}
       </Route>
       <Route path="/student/booking">
         {() => <ProtectedRoute component={StudentBooking} role="student" />}

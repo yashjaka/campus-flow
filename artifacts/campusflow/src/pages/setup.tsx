@@ -1,11 +1,28 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { useGetSetupStatus, useCreateAdminSetup, getGetSetupStatusQueryKey } from "@workspace/api-client-react";
+import {
+  useGetSetupStatus,
+  useCreateAdminSetup,
+  getGetSetupStatusQueryKey,
+} from "@workspace/api-client-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { GradientBackground } from "@/components/layout/GradientBackground";
@@ -45,17 +62,29 @@ export default function Setup() {
   });
 
   const onSubmit = (values: z.infer<typeof setupSchema>) => {
-    createAdmin.mutate({ data: values }, {
-      onSuccess: (response) => {
-        login(response.token, response.user);
-        toast({ title: "Setup complete", description: "Admin account created successfully." });
-        queryClient.invalidateQueries({ queryKey: getGetSetupStatusQueryKey() });
-        setLocation("/dashboard/admin");
+    createAdmin.mutate(
+      { data: values },
+      {
+        onSuccess: (response) => {
+          login(response.token, response.user);
+          toast({
+            title: "Setup complete",
+            description: "Admin account created successfully.",
+          });
+          queryClient.invalidateQueries({
+            queryKey: getGetSetupStatusQueryKey(),
+          });
+          setLocation("/dashboard/admin");
+        },
+        onError: (error: any) => {
+          toast({
+            title: "Setup failed",
+            description: error.message || "An error occurred",
+            variant: "destructive",
+          });
+        },
       },
-      onError: (error: any) => {
-        toast({ title: "Setup failed", description: error.message || "An error occurred", variant: "destructive" });
-      }
-    });
+    );
   };
 
   if (isLoading) {
@@ -88,14 +117,19 @@ export default function Setup() {
                   <ShieldCheck className="h-6 w-6" />
                 </div>
               </div>
-              <CardTitle className="text-2xl font-bold tracking-tight">System Setup</CardTitle>
+              <CardTitle className="text-2xl font-bold tracking-tight">
+                System Setup
+              </CardTitle>
               <CardDescription>
                 Create the initial CampusFlow administrator account.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-4"
+                >
                   <FormField
                     control={form.control}
                     name="name"
@@ -103,7 +137,11 @@ export default function Setup() {
                       <FormItem>
                         <FormLabel>Full Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="Jane Doe" {...field} className="bg-background/50 backdrop-blur-sm" />
+                          <Input
+                            placeholder="Jane Doe"
+                            {...field}
+                            className="bg-background/50 backdrop-blur-sm"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -116,7 +154,12 @@ export default function Setup() {
                       <FormItem>
                         <FormLabel>Admin Email</FormLabel>
                         <FormControl>
-                          <Input type="email" placeholder="admin@university.edu" {...field} className="bg-background/50 backdrop-blur-sm" />
+                          <Input
+                            type="email"
+                            placeholder="admin@university.edu"
+                            {...field}
+                            className="bg-background/50 backdrop-blur-sm"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -129,14 +172,24 @@ export default function Setup() {
                       <FormItem>
                         <FormLabel>Password</FormLabel>
                         <FormControl>
-                          <Input type="password" {...field} className="bg-background/50 backdrop-blur-sm" />
+                          <Input
+                            type="password"
+                            {...field}
+                            className="bg-background/50 backdrop-blur-sm"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  <Button type="submit" className="w-full" disabled={createAdmin.isPending}>
-                    {createAdmin.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={createAdmin.isPending}
+                  >
+                    {createAdmin.isPending ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : null}
                     Complete Setup
                   </Button>
                 </form>

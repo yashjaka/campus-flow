@@ -4,7 +4,10 @@
   "license": "MIT",
   "scripts": {
     "preinstall": "node scripts/preinstall.cjs",
+    "dev": "pnpm --filter \"@workspace/api-server\" --filter \"@workspace/campusflow\" --parallel run dev",
     "build": "pnpm run typecheck && pnpm -r --if-present run build",
+    "preview": "pnpm --filter \"@workspace/campusflow\" run preview",
+    "lint": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,md}\" --ignore-path .gitignore",
     "typecheck:libs": "tsc --build",
     "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck"
   },

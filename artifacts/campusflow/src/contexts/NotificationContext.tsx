@@ -1,5 +1,16 @@
-import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from "react";
-import { notificationStore, type AppNotification, type NotificationType } from "@/lib/student-store";
+import {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useEffect,
+  ReactNode,
+} from "react";
+import {
+  notificationStore,
+  type AppNotification,
+  type NotificationType,
+} from "@/lib/student-store";
 import { useAuth } from "@/contexts/AuthContext";
 
 interface NotificationContextValue {
@@ -16,7 +27,9 @@ interface NotificationContextValue {
   refresh: () => void;
 }
 
-const NotificationContext = createContext<NotificationContextValue | null>(null);
+const NotificationContext = createContext<NotificationContextValue | null>(
+  null,
+);
 
 export function NotificationProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
@@ -37,7 +50,12 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
   }, [refresh]);
 
   const addNotification = useCallback(
-    (data: { type: NotificationType; title: string; message: string; link?: string }) => {
+    (data: {
+      type: NotificationType;
+      title: string;
+      message: string;
+      link?: string;
+    }) => {
       if (!user) return;
       notificationStore.add({ ...data, userId: user.id });
       refresh();
@@ -62,7 +80,16 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   return (
-    <NotificationContext.Provider value={{ notifications, unreadCount, addNotification, markRead, markAllRead, refresh }}>
+    <NotificationContext.Provider
+      value={{
+        notifications,
+        unreadCount,
+        addNotification,
+        markRead,
+        markAllRead,
+        refresh,
+      }}
+    >
       {children}
     </NotificationContext.Provider>
   );
@@ -70,6 +97,9 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 
 export function useNotifications() {
   const ctx = useContext(NotificationContext);
-  if (!ctx) throw new Error("useNotifications must be used within NotificationProvider");
+  if (!ctx)
+    throw new Error(
+      "useNotifications must be used within NotificationProvider",
+    );
   return ctx;
 }

@@ -4,8 +4,21 @@ import { useAdminLogin } from "@workspace/api-client-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { GradientBackground } from "@/components/layout/GradientBackground";
@@ -34,16 +47,26 @@ export default function AdminLogin() {
   });
 
   const onSubmit = (values: z.infer<typeof adminLoginSchema>) => {
-    adminLogin.mutate({ data: values }, {
-      onSuccess: (response) => {
-        login(response.token, response.user);
-        toast({ title: "Welcome back", description: "Successfully logged in as Administrator." });
-        setLocation("/dashboard/admin");
+    adminLogin.mutate(
+      { data: values },
+      {
+        onSuccess: (response) => {
+          login(response.token, response.user);
+          toast({
+            title: "Welcome back",
+            description: "Successfully logged in as Administrator.",
+          });
+          setLocation("/dashboard/admin");
+        },
+        onError: (error: any) => {
+          toast({
+            title: "Login failed",
+            description: error.message || "Invalid credentials.",
+            variant: "destructive",
+          });
+        },
       },
-      onError: (error: any) => {
-        toast({ title: "Login failed", description: error.message || "Invalid credentials.", variant: "destructive" });
-      }
-    });
+    );
   };
 
   return (
@@ -56,7 +79,10 @@ export default function AdminLogin() {
           className="w-full max-w-md"
         >
           <Link href="/">
-            <Button variant="ghost" className="mb-4 -ml-2 text-muted-foreground hover:text-foreground">
+            <Button
+              variant="ghost"
+              className="mb-4 -ml-2 text-muted-foreground hover:text-foreground"
+            >
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to home
             </Button>
@@ -68,14 +94,19 @@ export default function AdminLogin() {
                   <ShieldCheck className="h-6 w-6" />
                 </div>
               </div>
-              <CardTitle className="text-2xl font-bold tracking-tight">Admin Portal</CardTitle>
+              <CardTitle className="text-2xl font-bold tracking-tight">
+                Admin Portal
+              </CardTitle>
               <CardDescription>
                 Secure access for institutional administrators.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-4"
+                >
                   <FormField
                     control={form.control}
                     name="email"
@@ -83,7 +114,12 @@ export default function AdminLogin() {
                       <FormItem>
                         <FormLabel>Admin Email</FormLabel>
                         <FormControl>
-                          <Input type="email" placeholder="admin@university.edu" {...field} className="bg-background/50 backdrop-blur-sm" />
+                          <Input
+                            type="email"
+                            placeholder="admin@university.edu"
+                            {...field}
+                            className="bg-background/50 backdrop-blur-sm"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -96,14 +132,24 @@ export default function AdminLogin() {
                       <FormItem>
                         <FormLabel>Password</FormLabel>
                         <FormControl>
-                          <Input type="password" {...field} className="bg-background/50 backdrop-blur-sm" />
+                          <Input
+                            type="password"
+                            {...field}
+                            className="bg-background/50 backdrop-blur-sm"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-700 text-white" disabled={adminLogin.isPending}>
-                    {adminLogin.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                  <Button
+                    type="submit"
+                    className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                    disabled={adminLogin.isPending}
+                  >
+                    {adminLogin.isPending ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : null}
                     Access Portal
                   </Button>
                 </form>

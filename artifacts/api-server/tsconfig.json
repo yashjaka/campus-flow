@@ -4,18 +4,15 @@
     "incremental": true,
     "tsBuildInfoFile": ".tsbuildinfo",
     "outDir": "dist",
+    "rootDir": "src",
     "types": ["node"],
     "baseUrl": ".",
     "paths": {
-      "@workspace/api-zod": ["../../lib/api-zod/src/index.ts"],
-      "@workspace/db": ["../../lib/db/src/index.ts"]
+      "@workspace/api-zod": ["../../lib/api-zod/src/index.ts"]
     }
   },
-  "include": ["src", "api"],
+  "include": ["src"],
   "references": [
-    {
-      "path": "../../lib/db"
-    },
     {
       "path": "../../lib/api-zod"
     }

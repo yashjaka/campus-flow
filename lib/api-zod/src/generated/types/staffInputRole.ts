@@ -6,10 +6,10 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export type StaffInputRole = typeof StaffInputRole[keyof typeof StaffInputRole];
-
+export type StaffInputRole =
+  (typeof StaffInputRole)[keyof typeof StaffInputRole];
 
 export const StaffInputRole = {
-  faculty: 'faculty',
-  maintenance: 'maintenance',
+  faculty: "faculty",
+  maintenance: "maintenance",
 } as const;

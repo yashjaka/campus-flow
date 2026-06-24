@@ -5,7 +5,7 @@
  * CampusFlow API
  * OpenAPI spec version: 0.1.0
  */
-import type { StaffInputRole } from './staffInputRole';
+import type { StaffInputRole } from "./staffInputRole";
 
 export interface StaffInput {
   name: string;

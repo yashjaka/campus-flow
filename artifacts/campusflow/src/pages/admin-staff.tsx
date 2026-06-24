@@ -1,13 +1,50 @@
 import { useState } from "react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
-import { useListStaff, useCreateStaff, getListStaffQueryKey } from "@workspace/api-client-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  useListStaff,
+  useCreateStaff,
+  getListStaffQueryKey,
+} from "@workspace/api-client-react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -45,22 +82,30 @@ export default function AdminStaff() {
   });
 
   const onSubmit = (values: z.infer<typeof staffSchema>) => {
-    createStaff.mutate({ data: values }, {
-      onSuccess: () => {
-        toast({ title: "Staff member created successfully" });
-        queryClient.invalidateQueries({ queryKey: getListStaffQueryKey() });
-        setOpen(false);
-        form.reset();
+    createStaff.mutate(
+      { data: values },
+      {
+        onSuccess: () => {
+          toast({ title: "Staff member created successfully" });
+          queryClient.invalidateQueries({ queryKey: getListStaffQueryKey() });
+          setOpen(false);
+          form.reset();
+        },
+        onError: (error: any) => {
+          toast({
+            title: "Failed to create staff member",
+            description: error.message,
+            variant: "destructive",
+          });
+        },
       },
-      onError: (error: any) => {
-        toast({ title: "Failed to create staff member", description: error.message, variant: "destructive" });
-      }
-    });
+    );
   };
 
-  const filteredStaff = staff?.filter((s) => 
-    s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    s.email.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredStaff = staff?.filter(
+    (s) =>
+      s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      s.email.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   return (
@@ -69,7 +114,9 @@ export default function AdminStaff() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Staff</h1>
-            <p className="text-muted-foreground mt-1">Manage faculty and maintenance personnel.</p>
+            <p className="text-muted-foreground mt-1">
+              Manage faculty and maintenance personnel.
+            </p>
           </div>
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
@@ -85,39 +132,103 @@ export default function AdminStaff() {
                 </DialogDescription>
               </DialogHeader>
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                  <FormField control={form.control} name="name" render={({ field }) => (
-                    <FormItem><FormLabel>Full Name</FormLabel><FormControl><Input placeholder="Dr. Jane Smith" {...field} /></FormControl><FormMessage /></FormItem>
-                  )} />
-                  <FormField control={form.control} name="email" render={({ field }) => (
-                    <FormItem><FormLabel>Email</FormLabel><FormControl><Input type="email" placeholder="jane@university.edu" {...field} /></FormControl><FormMessage /></FormItem>
-                  )} />
-                  <FormField control={form.control} name="password" render={({ field }) => (
-                    <FormItem><FormLabel>Password</FormLabel><FormControl><Input type="password" {...field} /></FormControl><FormMessage /></FormItem>
-                  )} />
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField control={form.control} name="role" render={({ field }) => (
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-4"
+                >
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Role</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger><SelectValue placeholder="Select role" /></SelectTrigger>
-                          </FormControl>
-                          <SelectContent className="glass-card">
-                            <SelectItem value="faculty">Faculty</SelectItem>
-                            <SelectItem value="maintenance">Maintenance</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        <FormLabel>Full Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Dr. Jane Smith" {...field} />
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
-                    )} />
-                    <FormField control={form.control} name="department" render={({ field }) => (
-                      <FormItem><FormLabel>Department</FormLabel><FormControl><Input placeholder="Physics" {...field} value={field.value || ""} /></FormControl><FormMessage /></FormItem>
-                    )} />
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="email"
+                            placeholder="jane@university.edu"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password</FormLabel>
+                        <FormControl>
+                          <Input type="password" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="role"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Role</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select role" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className="glass-card">
+                              <SelectItem value="faculty">Faculty</SelectItem>
+                              <SelectItem value="maintenance">
+                                Maintenance
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="department"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Department</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Physics"
+                              {...field}
+                              value={field.value || ""}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
                   <div className="flex justify-end pt-4">
                     <Button type="submit" disabled={createStaff.isPending}>
-                      {createStaff.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      {createStaff.isPending && (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      )}
                       Create Account
                     </Button>
                   </div>
@@ -131,8 +242,8 @@ export default function AdminStaff() {
           <CardHeader className="pb-4">
             <div className="flex items-center space-x-2">
               <Search className="h-4 w-4 text-muted-foreground" />
-              <Input 
-                placeholder="Search staff..." 
+              <Input
+                placeholder="Search staff..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="max-w-sm bg-background/50 border-white/10"
@@ -161,23 +272,42 @@ export default function AdminStaff() {
                   <TableBody>
                     {filteredStaff?.length === 0 ? (
                       <TableRow className="border-white/10 hover:bg-white/5">
-                        <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
+                        <TableCell
+                          colSpan={5}
+                          className="h-24 text-center text-muted-foreground"
+                        >
                           No staff found.
                         </TableCell>
                       </TableRow>
                     ) : (
                       filteredStaff?.map((s) => (
-                        <TableRow key={s.id} className="border-white/10 hover:bg-white/5">
-                          <TableCell className="font-medium">{s.name}</TableCell>
-                          <TableCell className="text-muted-foreground">{s.email}</TableCell>
+                        <TableRow
+                          key={s.id}
+                          className="border-white/10 hover:bg-white/5"
+                        >
+                          <TableCell className="font-medium">
+                            {s.name}
+                          </TableCell>
+                          <TableCell className="text-muted-foreground">
+                            {s.email}
+                          </TableCell>
                           <TableCell>
-                            <Badge variant="outline" className={s.role === 'faculty' ? "border-blue-500/30 text-blue-500" : "border-amber-500/30 text-amber-500"}>
+                            <Badge
+                              variant="outline"
+                              className={
+                                s.role === "faculty"
+                                  ? "border-blue-500/30 text-blue-500"
+                                  : "border-amber-500/30 text-amber-500"
+                              }
+                            >
                               {s.role}
                             </Badge>
                           </TableCell>
                           <TableCell>{s.department || "-"}</TableCell>
                           <TableCell className="text-right">
-                            <Badge variant={s.isActive ? "default" : "secondary"}>
+                            <Badge
+                              variant={s.isActive ? "default" : "secondary"}
+                            >
                               {s.isActive ? "Active" : "Inactive"}
                             </Badge>
                           </TableCell>

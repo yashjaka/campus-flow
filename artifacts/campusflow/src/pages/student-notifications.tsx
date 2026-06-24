@@ -20,7 +20,10 @@ import {
 } from "lucide-react";
 import type { NotificationType } from "@/lib/student-store";
 
-const notifIcon: Record<NotificationType, React.ComponentType<{ className?: string }>> = {
+const notifIcon: Record<
+  NotificationType,
+  React.ComponentType<{ className?: string }>
+> = {
   issue_assigned: Wrench,
   status_changed: Info,
   issue_resolved: CheckCircle2,
@@ -33,21 +36,21 @@ const notifIcon: Record<NotificationType, React.ComponentType<{ className?: stri
 };
 
 const notifColor: Record<NotificationType, string> = {
-  issue_assigned: 'text-purple-400 bg-purple-500/10',
-  status_changed: 'text-blue-400 bg-blue-500/10',
-  issue_resolved: 'text-green-400 bg-green-500/10',
-  sos_update: 'text-red-400 bg-red-500/10',
-  new_notice: 'text-yellow-400 bg-yellow-500/10',
-  lost_found_match: 'text-orange-400 bg-orange-500/10',
-  booking_approved: 'text-green-400 bg-green-500/10',
-  booking_rejected: 'text-red-400 bg-red-500/10',
-  new_event: 'text-primary bg-primary/10',
+  issue_assigned: "text-purple-400 bg-purple-500/10",
+  status_changed: "text-blue-400 bg-blue-500/10",
+  issue_resolved: "text-green-400 bg-green-500/10",
+  sos_update: "text-red-400 bg-red-500/10",
+  new_notice: "text-yellow-400 bg-yellow-500/10",
+  lost_found_match: "text-orange-400 bg-orange-500/10",
+  booking_approved: "text-green-400 bg-green-500/10",
+  booking_rejected: "text-red-400 bg-red-500/10",
+  new_event: "text-primary bg-primary/10",
 };
 
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
   const mins = Math.floor(diff / 60000);
-  if (mins < 1) return 'Just now';
+  if (mins < 1) return "Just now";
   if (mins < 60) return `${mins}m ago`;
   const hrs = Math.floor(mins / 60);
   if (hrs < 24) return `${hrs}h ago`;
@@ -55,7 +58,8 @@ function timeAgo(dateStr: string): string {
 }
 
 export default function StudentNotifications() {
-  const { notifications, unreadCount, markRead, markAllRead } = useNotifications();
+  const { notifications, unreadCount, markRead, markAllRead } =
+    useNotifications();
 
   return (
     <DashboardLayout>
@@ -64,11 +68,18 @@ export default function StudentNotifications() {
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Notifications</h1>
             <p className="text-muted-foreground mt-1">
-              {unreadCount > 0 ? `${unreadCount} unread notification${unreadCount > 1 ? 's' : ''}` : 'All caught up!'}
+              {unreadCount > 0
+                ? `${unreadCount} unread notification${unreadCount > 1 ? "s" : ""}`
+                : "All caught up!"}
             </p>
           </div>
           {unreadCount > 0 && (
-            <Button variant="outline" size="sm" className="gap-2" onClick={markAllRead}>
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2"
+              onClick={markAllRead}
+            >
               <CheckCheck className="h-4 w-4" />
               Mark all read
             </Button>
@@ -79,9 +90,12 @@ export default function StudentNotifications() {
           <Card className="glass-card text-center py-16">
             <CardContent>
               <BellOff className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No notifications yet</h3>
+              <h3 className="text-lg font-semibold mb-2">
+                No notifications yet
+              </h3>
               <p className="text-sm text-muted-foreground">
-                Notifications will appear here when your issues are updated or new events are posted.
+                Notifications will appear here when your issues are updated or
+                new events are posted.
               </p>
             </CardContent>
           </Card>
@@ -89,7 +103,8 @@ export default function StudentNotifications() {
           <div className="space-y-2">
             {notifications.map((notif, i) => {
               const Icon = notifIcon[notif.type] ?? Bell;
-              const color = notifColor[notif.type] ?? 'text-primary bg-primary/10';
+              const color =
+                notifColor[notif.type] ?? "text-primary bg-primary/10";
               return (
                 <motion.div
                   key={notif.id}
@@ -98,21 +113,27 @@ export default function StudentNotifications() {
                   transition={{ delay: i * 0.04 }}
                 >
                   <Card
-                    className={`glass-card cursor-pointer transition-all hover:border-primary/20 ${!notif.read ? 'border-primary/30' : ''}`}
+                    className={`glass-card cursor-pointer transition-all hover:border-primary/20 ${!notif.read ? "border-primary/30" : ""}`}
                     onClick={() => !notif.read && markRead(notif.id)}
                   >
                     <CardContent className="p-4">
                       <div className="flex items-start gap-3">
-                        <div className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 ${color}`}>
+                        <div
+                          className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 ${color}`}
+                        >
                           <Icon className="h-4 w-4" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-2">
                             <div>
-                              <p className={`text-sm font-medium ${!notif.read ? 'text-foreground' : 'text-muted-foreground'}`}>
+                              <p
+                                className={`text-sm font-medium ${!notif.read ? "text-foreground" : "text-muted-foreground"}`}
+                              >
                                 {notif.title}
                               </p>
-                              <p className="text-sm text-muted-foreground mt-0.5">{notif.message}</p>
+                              <p className="text-sm text-muted-foreground mt-0.5">
+                                {notif.message}
+                              </p>
                             </div>
                             <div className="flex items-center gap-2 flex-shrink-0">
                               {!notif.read && (

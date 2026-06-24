@@ -6,10 +6,10 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export type StaffMemberRole = typeof StaffMemberRole[keyof typeof StaffMemberRole];
-
+export type StaffMemberRole =
+  (typeof StaffMemberRole)[keyof typeof StaffMemberRole];
 
 export const StaffMemberRole = {
-  faculty: 'faculty',
-  maintenance: 'maintenance',
+  faculty: "faculty",
+  maintenance: "maintenance",
 } as const;
