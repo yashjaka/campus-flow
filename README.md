@@ -30,9 +30,10 @@ CampusFlow is a comprehensive, premium digital workspace for modern universities
 
 ## 🔍 Problem Statement
 
-Managing operations inside modern university campuses is often fragmented. Universities rely on multiple disjointed systems for reporting maintenance issues, booking campus resources (labs, seminar halls), managing events, displaying announcements, registering lost/found items, and broadcasting campus emergencies. 
+Managing operations inside modern university campuses is often fragmented. Universities rely on multiple disjointed systems for reporting maintenance issues, booking campus resources (labs, seminar halls), managing events, displaying announcements, registering lost/found items, and broadcasting campus emergencies.
 
 This fragmentation results in:
+
 - Delayed responses to critical facilities maintenance and safety issues.
 - Administrative overhead from manually coordinating resource bookings and notices.
 - Lack of centralized transparency, leaving students, faculty, and maintenance staff disconnected.
@@ -43,6 +44,7 @@ This fragmentation results in:
 ## 💡 Solution Overview
 
 CampusFlow resolves these challenges by providing a single, role-based platform that unites the entire university community:
+
 1. **Students**: A modern dashboard to report facilities issues, book resources, find lost items, register for events, view notices, submit surveys, and trigger SOS alerts.
 2. **Faculty**: Dedicated tools to post notices, request facilities support, view event participation, and manage booking requests.
 3. **Maintenance Staff**: Real-time status update interfaces with photo uploads to track, assign, and update reported maintenance tasks.
@@ -144,16 +146,19 @@ campus-flow/
 ### Step-by-Step Setup
 
 1. **Clone the Repository**:
+
    ```bash
    git clone https://github.com/yashjaka/campus-flow.git
    cd campus-flow
    ```
 
 2. **Install Workspace Dependencies**:
+
    ```bash
    pnpm install
    ```
-   *(Alternatively, run `npx pnpm install` if pnpm is not globally installed.)*
+
+   _(Alternatively, run `npx pnpm install` if pnpm is not globally installed.)_
 
 3. **Configure Environment Variables**:
    Copy the root configuration template:
@@ -173,6 +178,7 @@ pnpm dev
 ```
 
 This starts:
+
 - **Express Backend API**: Runs on port `5000` (by default)
 - **Vite Frontend Dev Server**: Runs on port `5173` (by default) with proxy rules routing API requests to `/api/*` seamlessly.
 
@@ -189,12 +195,14 @@ pnpm build
 ```
 
 This command runs:
+
 1. Workspace typecheck: Runs TypeScript compile audits (`tsc --noEmit`) across all client and backend projects.
 2. Codebundling: Builds production assets.
    - Frontend static assets are generated in `artifacts/campusflow/dist/public`
    - Express server files are bundled into `artifacts/api-server/dist`
 
 To preview the compiled client application:
+
 ```bash
 pnpm preview
 ```
@@ -210,6 +218,7 @@ pnpm lint
 ```
 
 To automatically format the codebase to match our Prettier style rules:
+
 ```bash
 npx prettier --write . --ignore-path .gitignore
 ```
@@ -219,22 +228,23 @@ npx prettier --write . --ignore-path .gitignore
 ## 🌐 Deployment Notes (Vercel Readiness)
 
 CampusFlow has been structured for painless future deployment:
+
 - **Build Output**: The Vite build configurations output directly to `artifacts/campusflow/dist/public` conforming to standard static asset hosting.
 - **Frontend SPA Routing**: Uses clean, client-side Wouter routing.
 - **API Proxy**: In production environments, client calls route to the relative `/api` path, easily mapped using Vercel rewrites or a server gateway.
 - **Database-Less Core**: The backend API operates an in-memory database configuration making it serverless-ready and easy to spin up instantly without database credentials.
 
-*Note: No deployment pipelines or Actions are included, keeping the codebase lightweight and deployment platform-agnostic.*
+_Note: No deployment pipelines or Actions are included, keeping the codebase lightweight and deployment platform-agnostic._
 
 ---
 
 ## 🖼️ Screenshots
 
-> *Placeholder: A collection of high-resolution mockups and screenshots representing the student portal, SOS reporting tool, notice boards, and admin dashboards will be hosted here.*
+> _Placeholder: A collection of high-resolution mockups and screenshots representing the student portal, SOS reporting tool, notice boards, and admin dashboards will be hosted here._
 
-| Landing Page | Student Dashboard | SOS Interface |
-|:---:|:---:|:---:|
-| *[Hero Section & Roles]* | *[Student Dashboard overview]* | *[SOS emergency broadcasts]* |
+|       Landing Page       |       Student Dashboard        |        SOS Interface         |
+| :----------------------: | :----------------------------: | :--------------------------: |
+| _[Hero Section & Roles]_ | _[Student Dashboard overview]_ | _[SOS emergency broadcasts]_ |
 
 ---
 
@@ -250,6 +260,7 @@ CampusFlow has been structured for painless future deployment:
 ## ✍️ Author Information
 
 Developed and maintained by:
+
 - **Yash Jaka** — [@yashjaka](https://github.com/yashjaka)
 
 ---
