@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useLocation, Link } from "wouter";
-import { useStaffLogin } from "@workspace/api-client-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { campusUserStore } from "@/lib/campus-store";
 import {
   Card,
   CardContent,
@@ -34,7 +34,6 @@ const staffLoginSchema = z.object({
 
 export default function StaffLogin() {
   const [, setLocation] = useLocation();
-  const staffLogin = useStaffLogin();
   const { toast } = useToast();
   const { login } = useAuth();
 
@@ -47,32 +46,44 @@ export default function StaffLogin() {
   });
 
   const onSubmit = (values: z.infer<typeof staffLoginSchema>) => {
-    staffLogin.mutate(
-      { data: values },
-      {
-        onSuccess: (response) => {
-          login(response.token, response.user);
-          toast({
-            title: "Welcome back",
-            description: "Successfully logged in.",
-          });
-          if (response.user.role === "faculty") {
-            setLocation("/dashboard/faculty");
-          } else if (response.user.role === "maintenance") {
-            setLocation("/dashboard/maintenance");
-          } else {
-            setLocation("/dashboard/student");
-          }
-        },
-        onError: (error: any) => {
-          toast({
-            title: "Login failed",
-            description: error.message || "Invalid credentials.",
-            variant: "destructive",
-          });
-        },
-      },
-    );
+    const user = campusUserStore
+      .getAll()
+      .find(
+        (u) =>
+          u.email === values.email &&
+          (u.role === "faculty" || u.role === "maintenance"),
+      );
+
+    if (user && user.isActive) {
+      login(`mock-token-${user.id}`, {
+        id: user.id,
+        name: user.name,
+        role: user.role,
+        email: user.email || null,
+        enrollmentNumber: user.enrollmentNumber || null,
+        collegeName: user.collegeName || null,
+        department: user.department || null,
+        semester: user.semester || null,
+        createdAt: user.createdAt,
+      });
+      toast({
+        title: "Welcome back",
+        description: "Successfully logged in.",
+      });
+      if (user.role === "faculty") {
+        setLocation("/dashboard/faculty");
+      } else if (user.role === "maintenance") {
+        setLocation("/dashboard/maintenance");
+      } else {
+        setLocation("/dashboard/student");
+      }
+    } else {
+      toast({
+        title: "Login failed",
+        description: "Invalid credentials or account is inactive.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -148,14 +159,7 @@ export default function StaffLogin() {
                       </FormItem>
                     )}
                   />
-                  <Button
-                    type="submit"
-                    className="w-full"
-                    disabled={staffLogin.isPending}
-                  >
-                    {staffLogin.isPending ? (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    ) : null}
+                  <Button type="submit" className="w-full">
                     Access Portal
                   </Button>
                 </form>

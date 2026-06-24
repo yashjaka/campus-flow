@@ -1,10 +1,5 @@
 import { useState, useEffect } from "react";
 import { useLocation, Link } from "wouter";
-import {
-  useStudentEntry,
-  useStaffLogin,
-  useAdminLogin,
-} from "@workspace/api-client-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { campusUserStore } from "@/lib/campus-store";
@@ -134,11 +129,6 @@ export default function LandingPage() {
     "student",
   );
 
-  // API Hooks
-  const studentEntry = useStudentEntry();
-  const staffLogin = useStaffLogin();
-  const adminLogin = useAdminLogin();
-
   // Forms
   const studentForm = useForm<z.infer<typeof studentSchema>>({
     resolver: zodResolver(studentSchema),
@@ -165,104 +155,107 @@ export default function LandingPage() {
 
   // Submit Student
   const onStudentSubmit = (values: z.infer<typeof studentSchema>) => {
-    studentEntry.mutate(
-      { data: { enrollmentNumber: values.enrollmentNumber } },
-      {
-        onSuccess: (response) => {
-          login(response.token, response.user);
-          toast({
-            title: "Welcome back",
-            description: `Successfully logged in as ${response.user.name}`,
-          });
-          setStudentModalOpen(false);
-          setLocation("/dashboard/student");
-        },
-        onError: (err: any) => {
-          // Auto-registration fallback for sandbox/local testing
-          if (err.status === 404 || err.message?.includes("not found")) {
-            toast({
-              title: "Creating sandbox student",
-              description:
-                "Enrollment not found. Registering a new student profile in local storage.",
-            });
-            const localUser = campusUserStore.create({
-              name: values.name,
-              email: `${values.enrollmentNumber.toLowerCase()}@campusflow.demo`,
-              role: "student",
-              enrollmentNumber: values.enrollmentNumber,
-              collegeName: values.collegeName,
-              department: values.department,
-              semester: Number(values.semester),
-              isActive: true,
-            });
+    const existing = campusUserStore
+      .getAll()
+      .find(
+        (u) =>
+          u.role === "student" &&
+          u.enrollmentNumber === values.enrollmentNumber,
+      );
 
-            login(`mock-token-${values.enrollmentNumber}`, {
-              id: localUser.id,
-              name: localUser.name,
-              role: "student",
-              email: localUser.email || null,
-              enrollmentNumber: localUser.enrollmentNumber || null,
-              collegeName: localUser.collegeName || null,
-              department: localUser.department || null,
-              semester: localUser.semester || null,
-              createdAt: localUser.createdAt,
-            });
+    if (existing) {
+      login(`mock-token-${existing.enrollmentNumber}`, {
+        id: existing.id,
+        name: existing.name,
+        role: "student",
+        email: existing.email || null,
+        enrollmentNumber: existing.enrollmentNumber || null,
+        collegeName: existing.collegeName || null,
+        department: existing.department || null,
+        semester: existing.semester || null,
+        createdAt: existing.createdAt,
+      });
+      toast({
+        title: "Welcome back",
+        description: `Successfully logged in as ${existing.name}`,
+      });
+      setStudentModalOpen(false);
+      setLocation("/dashboard/student");
+    } else {
+      // Auto-register sandbox student
+      toast({
+        title: "Creating sandbox student",
+        description:
+          "Enrollment not found. Registering a new student profile in local storage.",
+      });
 
-            toast({
-              title: "Registration complete",
-              description: `Logged in as student ${localUser.name}`,
-            });
-            setStudentModalOpen(false);
-            setLocation("/dashboard/student");
-          } else {
-            toast({
-              title: "Login failed",
-              description: err.message || "Something went wrong.",
-              variant: "destructive",
-            });
-          }
-        },
-      },
-    );
+      const localUser = campusUserStore.create({
+        name: values.name,
+        email: `${values.enrollmentNumber.toLowerCase()}@campusflow.demo`,
+        role: "student",
+        enrollmentNumber: values.enrollmentNumber,
+        collegeName: values.collegeName,
+        department: values.department,
+        semester: Number(values.semester),
+        isActive: true,
+      });
+
+      login(`mock-token-${values.enrollmentNumber}`, {
+        id: localUser.id,
+        name: localUser.name,
+        role: "student",
+        email: localUser.email || null,
+        enrollmentNumber: localUser.enrollmentNumber || null,
+        collegeName: localUser.collegeName || null,
+        department: localUser.department || null,
+        semester: localUser.semester || null,
+        createdAt: localUser.createdAt,
+      });
+
+      toast({
+        title: "Registration complete",
+        description: `Logged in as student ${localUser.name}`,
+      });
+      setStudentModalOpen(false);
+      setLocation("/dashboard/student");
+    }
   };
 
   // Submit Staff / Admin
   const onStaffSubmit = (values: z.infer<typeof staffSchema>) => {
-    const handleSuccess = (response: any, typeName: string) => {
-      login(response.token, response.user);
+    const user = campusUserStore
+      .getAll()
+      .find((u) => u.email === values.email && u.role === values.role);
+
+    if (user && user.isActive) {
+      login(`mock-token-${user.id}`, {
+        id: user.id,
+        name: user.name,
+        role: user.role,
+        email: user.email || null,
+        enrollmentNumber: user.enrollmentNumber || null,
+        collegeName: user.collegeName || null,
+        department: user.department || null,
+        semester: user.semester || null,
+        createdAt: user.createdAt,
+      });
+
+      const typeName =
+        user.role === "admin"
+          ? "Campus Administrator"
+          : user.role === "faculty"
+            ? "Faculty Member"
+            : "Facilities Crew";
+
       toast({ title: "Welcome back", description: `Logged in as ${typeName}` });
       setStaffModalOpen(false);
-      setLocation(`/dashboard/${response.user.role}`);
-    };
-
-    const handleError = (err: any) => {
+      setLocation(`/dashboard/${user.role}`);
+    } else {
       toast({
         title: "Login failed",
-        description: err.message || "Invalid credentials",
+        description: "Invalid credentials or account is inactive.",
         variant: "destructive",
       });
-    };
-
-    if (values.role === "admin") {
-      adminLogin.mutate(
-        { data: { email: values.email, password: values.password } },
-        {
-          onSuccess: (res) => handleSuccess(res, "Campus Administrator"),
-          onError: handleError,
-        },
-      );
-    } else {
-      staffLogin.mutate(
-        { data: { email: values.email, password: values.password } },
-        {
-          onSuccess: (res) =>
-            handleSuccess(
-              res,
-              values.role === "faculty" ? "Faculty Member" : "Facilities Crew",
-            ),
-          onError: handleError,
-        },
-      );
     }
   };
 
@@ -1095,11 +1088,7 @@ export default function LandingPage() {
               <Button
                 type="submit"
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold h-11 text-sm rounded-lg"
-                disabled={studentEntry.isPending}
               >
-                {studentEntry.isPending ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : null}
                 Continue To Dashboard
               </Button>
             </form>
@@ -1220,11 +1209,7 @@ export default function LandingPage() {
               <Button
                 type="submit"
                 className="w-full bg-primary hover:bg-primary/95 text-primary-foreground font-bold h-11 text-sm rounded-lg glow-primary"
-                disabled={staffLogin.isPending || adminLogin.isPending}
               >
-                {staffLogin.isPending || adminLogin.isPending ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : null}
                 Login
               </Button>
             </form>

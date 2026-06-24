@@ -6,16 +6,18 @@ import {
   ReactNode,
 } from "react";
 import { useLocation } from "wouter";
-import { UserProfile, setAuthTokenGetter } from "@workspace/api-client-react";
 
-// Register the bearer token getter dynamically for the generated API client hooks
-setAuthTokenGetter(() => {
-  try {
-    return localStorage.getItem("campusflow_token");
-  } catch {
-    return null;
-  }
-});
+export interface UserProfile {
+  id: string;
+  name: string;
+  email: string | null;
+  role: "student" | "faculty" | "maintenance" | "admin";
+  enrollmentNumber?: string | null;
+  collegeName?: string | null;
+  department?: string | null;
+  semester?: number | null;
+  createdAt: string;
+}
 
 interface AuthContextType {
   user: UserProfile | null;

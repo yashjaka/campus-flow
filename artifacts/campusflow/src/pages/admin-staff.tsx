@@ -1,10 +1,6 @@
 import { useState } from "react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
-import {
-  useListStaff,
-  useCreateStaff,
-  getListStaffQueryKey,
-} from "@workspace/api-client-react";
+import { campusUserStore } from "@/lib/campus-store";
 import {
   Card,
   CardContent,
@@ -50,7 +46,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
-import { useQueryClient } from "@tanstack/react-query";
 import { Search, Plus, Loader2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -63,10 +58,8 @@ const staffSchema = z.object({
 });
 
 export default function AdminStaff() {
-  const { data: staff, isLoading } = useListStaff();
-  const createStaff = useCreateStaff();
+  const [staff, setStaff] = useState(() => campusUserStore.getStaff());
   const { toast } = useToast();
-  const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
   const [open, setOpen] = useState(false);
 
@@ -82,24 +75,17 @@ export default function AdminStaff() {
   });
 
   const onSubmit = (values: z.infer<typeof staffSchema>) => {
-    createStaff.mutate(
-      { data: values },
-      {
-        onSuccess: () => {
-          toast({ title: "Staff member created successfully" });
-          queryClient.invalidateQueries({ queryKey: getListStaffQueryKey() });
-          setOpen(false);
-          form.reset();
-        },
-        onError: (error: any) => {
-          toast({
-            title: "Failed to create staff member",
-            description: error.message,
-            variant: "destructive",
-          });
-        },
-      },
-    );
+    campusUserStore.create({
+      name: values.name,
+      email: values.email,
+      role: values.role,
+      department: values.department || "General",
+      isActive: true,
+    });
+    setStaff(campusUserStore.getStaff());
+    toast({ title: "Staff member created successfully" });
+    setOpen(false);
+    form.reset();
   };
 
   const filteredStaff = staff?.filter(
@@ -225,12 +211,7 @@ export default function AdminStaff() {
                     />
                   </div>
                   <div className="flex justify-end pt-4">
-                    <Button type="submit" disabled={createStaff.isPending}>
-                      {createStaff.isPending && (
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      )}
-                      Create Account
-                    </Button>
+                    <Button type="submit">Create Account</Button>
                   </div>
                 </form>
               </Form>
@@ -251,73 +232,61 @@ export default function AdminStaff() {
             </div>
           </CardHeader>
           <CardContent>
-            {isLoading ? (
-              <div className="space-y-2">
-                <Skeleton className="h-10 w-full" />
-                <Skeleton className="h-10 w-full" />
-                <Skeleton className="h-10 w-full" />
-              </div>
-            ) : (
-              <div className="rounded-md border border-white/10 overflow-hidden">
-                <Table>
-                  <TableHeader className="bg-white/5">
-                    <TableRow className="border-white/10 hover:bg-transparent">
-                      <TableHead>Name</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Role</TableHead>
-                      <TableHead>Department</TableHead>
-                      <TableHead className="text-right">Status</TableHead>
+            <div className="rounded-md border border-white/10 overflow-hidden">
+              <Table>
+                <TableHeader className="bg-white/5">
+                  <TableRow className="border-white/10 hover:bg-transparent">
+                    <TableHead>Name</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Role</TableHead>
+                    <TableHead>Department</TableHead>
+                    <TableHead className="text-right">Status</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredStaff?.length === 0 ? (
+                    <TableRow className="border-white/10 hover:bg-white/5">
+                      <TableCell
+                        colSpan={5}
+                        className="h-24 text-center text-muted-foreground"
+                      >
+                        No staff found.
+                      </TableCell>
                     </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredStaff?.length === 0 ? (
-                      <TableRow className="border-white/10 hover:bg-white/5">
-                        <TableCell
-                          colSpan={5}
-                          className="h-24 text-center text-muted-foreground"
-                        >
-                          No staff found.
+                  ) : (
+                    filteredStaff?.map((s) => (
+                      <TableRow
+                        key={s.id}
+                        className="border-white/10 hover:bg-white/5"
+                      >
+                        <TableCell className="font-medium">{s.name}</TableCell>
+                        <TableCell className="text-muted-foreground">
+                          {s.email}
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant="outline"
+                            className={
+                              s.role === "faculty"
+                                ? "border-blue-500/30 text-blue-500"
+                                : "border-amber-500/30 text-amber-500"
+                            }
+                          >
+                            {s.role}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>{s.department || "-"}</TableCell>
+                        <TableCell className="text-right">
+                          <Badge variant={s.isActive ? "default" : "secondary"}>
+                            {s.isActive ? "Active" : "Inactive"}
+                          </Badge>
                         </TableCell>
                       </TableRow>
-                    ) : (
-                      filteredStaff?.map((s) => (
-                        <TableRow
-                          key={s.id}
-                          className="border-white/10 hover:bg-white/5"
-                        >
-                          <TableCell className="font-medium">
-                            {s.name}
-                          </TableCell>
-                          <TableCell className="text-muted-foreground">
-                            {s.email}
-                          </TableCell>
-                          <TableCell>
-                            <Badge
-                              variant="outline"
-                              className={
-                                s.role === "faculty"
-                                  ? "border-blue-500/30 text-blue-500"
-                                  : "border-amber-500/30 text-amber-500"
-                              }
-                            >
-                              {s.role}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>{s.department || "-"}</TableCell>
-                          <TableCell className="text-right">
-                            <Badge
-                              variant={s.isActive ? "default" : "secondary"}
-                            >
-                              {s.isActive ? "Active" : "Inactive"}
-                            </Badge>
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-            )}
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
           </CardContent>
         </Card>
       </div>

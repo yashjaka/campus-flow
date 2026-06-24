@@ -1,10 +1,6 @@
 import { useState } from "react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
-import {
-  useListStudents,
-  useCreateStudent,
-  getListStudentsQueryKey,
-} from "@workspace/api-client-react";
+import { campusUserStore } from "@/lib/campus-store";
 import {
   Card,
   CardContent,
@@ -42,7 +38,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
-import { useQueryClient } from "@tanstack/react-query";
 import { Search, Plus, Loader2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -55,10 +50,10 @@ const studentSchema = z.object({
 });
 
 export default function AdminStudents() {
-  const { data: students, isLoading } = useListStudents();
-  const createStudent = useCreateStudent();
+  const [students, setStudents] = useState(() =>
+    campusUserStore.getByRole("student"),
+  );
   const { toast } = useToast();
-  const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
   const [open, setOpen] = useState(false);
 
@@ -74,32 +69,28 @@ export default function AdminStudents() {
   });
 
   const onSubmit = (values: z.infer<typeof studentSchema>) => {
-    createStudent.mutate(
-      { data: values },
-      {
-        onSuccess: () => {
-          toast({ title: "Student created successfully" });
-          queryClient.invalidateQueries({
-            queryKey: getListStudentsQueryKey(),
-          });
-          setOpen(false);
-          form.reset();
-        },
-        onError: (error: any) => {
-          toast({
-            title: "Failed to create student",
-            description: error.message,
-            variant: "destructive",
-          });
-        },
-      },
-    );
+    campusUserStore.create({
+      name: values.name,
+      email: `${values.enrollmentNumber.toLowerCase()}@campusflow.demo`,
+      enrollmentNumber: values.enrollmentNumber,
+      collegeName: values.collegeName,
+      department: values.department,
+      semester: Number(values.semester),
+      role: "student",
+      isActive: true,
+    });
+    setStudents(campusUserStore.getByRole("student"));
+    toast({ title: "Student created successfully" });
+    setOpen(false);
+    form.reset();
   };
 
   const filteredStudents = students?.filter(
     (student) =>
       student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      student.enrollmentNumber.toLowerCase().includes(searchTerm.toLowerCase()),
+      student.enrollmentNumber
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase()),
   );
 
   return (
@@ -199,12 +190,7 @@ export default function AdminStudents() {
                     />
                   </div>
                   <div className="flex justify-end pt-4">
-                    <Button type="submit" disabled={createStudent.isPending}>
-                      {createStudent.isPending && (
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      )}
-                      Register Student
-                    </Button>
+                    <Button type="submit">Register Student</Button>
                   </div>
                 </form>
               </Form>
@@ -225,58 +211,50 @@ export default function AdminStudents() {
             </div>
           </CardHeader>
           <CardContent>
-            {isLoading ? (
-              <div className="space-y-2">
-                <Skeleton className="h-10 w-full" />
-                <Skeleton className="h-10 w-full" />
-                <Skeleton className="h-10 w-full" />
-              </div>
-            ) : (
-              <div className="rounded-md border border-white/10 overflow-hidden">
-                <Table>
-                  <TableHeader className="bg-white/5">
-                    <TableRow className="border-white/10 hover:bg-transparent">
-                      <TableHead>Name</TableHead>
-                      <TableHead>Enrollment No.</TableHead>
-                      <TableHead>College</TableHead>
-                      <TableHead>Department</TableHead>
-                      <TableHead className="text-right">Semester</TableHead>
+            <div className="rounded-md border border-white/10 overflow-hidden">
+              <Table>
+                <TableHeader className="bg-white/5">
+                  <TableRow className="border-white/10 hover:bg-transparent">
+                    <TableHead>Name</TableHead>
+                    <TableHead>Enrollment No.</TableHead>
+                    <TableHead>College</TableHead>
+                    <TableHead>Department</TableHead>
+                    <TableHead className="text-right">Semester</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredStudents?.length === 0 ? (
+                    <TableRow className="border-white/10 hover:bg-white/5">
+                      <TableCell
+                        colSpan={5}
+                        className="h-24 text-center text-muted-foreground"
+                      >
+                        No students found.
+                      </TableCell>
                     </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredStudents?.length === 0 ? (
-                      <TableRow className="border-white/10 hover:bg-white/5">
-                        <TableCell
-                          colSpan={5}
-                          className="h-24 text-center text-muted-foreground"
-                        >
-                          No students found.
+                  ) : (
+                    filteredStudents?.map((student) => (
+                      <TableRow
+                        key={student.id}
+                        className="border-white/10 hover:bg-white/5"
+                      >
+                        <TableCell className="font-medium">
+                          {student.name}
+                        </TableCell>
+                        <TableCell className="font-mono text-xs">
+                          {student.enrollmentNumber}
+                        </TableCell>
+                        <TableCell>{student.collegeName}</TableCell>
+                        <TableCell>{student.department}</TableCell>
+                        <TableCell className="text-right">
+                          {student.semester}
                         </TableCell>
                       </TableRow>
-                    ) : (
-                      filteredStudents?.map((student) => (
-                        <TableRow
-                          key={student.id}
-                          className="border-white/10 hover:bg-white/5"
-                        >
-                          <TableCell className="font-medium">
-                            {student.name}
-                          </TableCell>
-                          <TableCell className="font-mono text-xs">
-                            {student.enrollmentNumber}
-                          </TableCell>
-                          <TableCell>{student.collegeName}</TableCell>
-                          <TableCell>{student.department}</TableCell>
-                          <TableCell className="text-right">
-                            {student.semester}
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-            )}
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
           </CardContent>
         </Card>
       </div>

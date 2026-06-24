@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useLocation, Link } from "wouter";
-import { useStudentEntry } from "@workspace/api-client-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -35,7 +34,6 @@ const studentLoginSchema = z.object({
 
 export default function StudentLogin() {
   const [, setLocation] = useLocation();
-  const studentEntry = useStudentEntry();
   const { toast } = useToast();
   const { login } = useAuth();
 
@@ -47,62 +45,69 @@ export default function StudentLogin() {
   });
 
   const onSubmit = (values: z.infer<typeof studentLoginSchema>) => {
-    studentEntry.mutate(
-      { data: values },
-      {
-        onSuccess: (response) => {
-          login(response.token, response.user);
-          toast({
-            title: "Welcome back",
-            description: "Successfully logged in.",
-          });
-          setLocation("/dashboard/student");
-        },
-        onError: (err: any) => {
-          if (err.status === 404 || err.message?.includes("not found")) {
-            toast({
-              title: "Creating sandbox student",
-              description:
-                "Enrollment not found. Auto-registering a profile in local storage.",
-            });
-            const localUser = campusUserStore.create({
-              name: `Student ${values.enrollmentNumber}`,
-              email: `${values.enrollmentNumber.toLowerCase()}@campusflow.demo`,
-              role: "student",
-              enrollmentNumber: values.enrollmentNumber,
-              collegeName: "State University of Technology",
-              department: "Computer Science",
-              semester: 4,
-              isActive: true,
-            });
+    // Find student in local store
+    const existing = campusUserStore
+      .getAll()
+      .find(
+        (u) =>
+          u.role === "student" &&
+          u.enrollmentNumber === values.enrollmentNumber,
+      );
 
-            login(`mock-token-${values.enrollmentNumber}`, {
-              id: localUser.id,
-              name: localUser.name,
-              role: "student",
-              email: localUser.email || null,
-              enrollmentNumber: localUser.enrollmentNumber || null,
-              collegeName: localUser.collegeName || null,
-              department: localUser.department || null,
-              semester: localUser.semester || null,
-              createdAt: localUser.createdAt,
-            });
+    if (existing) {
+      login(`mock-token-${existing.enrollmentNumber}`, {
+        id: existing.id,
+        name: existing.name,
+        role: "student",
+        email: existing.email || null,
+        enrollmentNumber: existing.enrollmentNumber || null,
+        collegeName: existing.collegeName || null,
+        department: existing.department || null,
+        semester: existing.semester || null,
+        createdAt: existing.createdAt,
+      });
+      toast({
+        title: "Welcome back",
+        description: `Successfully logged in as ${existing.name}.`,
+      });
+      setLocation("/dashboard/student");
+    } else {
+      // Auto-register sandbox student
+      toast({
+        title: "Creating sandbox student",
+        description:
+          "Enrollment not found. Auto-registering a profile in local storage.",
+      });
 
-            toast({
-              title: "Welcome to CampusFlow",
-              description: `Logged in as ${localUser.name}`,
-            });
-            setLocation("/dashboard/student");
-          } else {
-            toast({
-              title: "Login failed",
-              description: err.message || "Invalid enrollment number.",
-              variant: "destructive",
-            });
-          }
-        },
-      },
-    );
+      const localUser = campusUserStore.create({
+        name: `Student ${values.enrollmentNumber}`,
+        email: `${values.enrollmentNumber.toLowerCase()}@campusflow.demo`,
+        role: "student",
+        enrollmentNumber: values.enrollmentNumber,
+        collegeName: "State University of Technology",
+        department: "Computer Science",
+        semester: 4,
+        isActive: true,
+      });
+
+      login(`mock-token-${values.enrollmentNumber}`, {
+        id: localUser.id,
+        name: localUser.name,
+        role: "student",
+        email: localUser.email || null,
+        enrollmentNumber: localUser.enrollmentNumber || null,
+        collegeName: localUser.collegeName || null,
+        department: localUser.department || null,
+        semester: localUser.semester || null,
+        createdAt: localUser.createdAt,
+      });
+
+      toast({
+        title: "Welcome to CampusFlow",
+        description: `Logged in as ${localUser.name}`,
+      });
+      setLocation("/dashboard/student");
+    }
   };
 
   return (
@@ -163,11 +168,7 @@ export default function StudentLogin() {
                   <Button
                     type="submit"
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                    disabled={studentEntry.isPending}
                   >
-                    {studentEntry.isPending ? (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    ) : null}
                     Access Portal
                   </Button>
                 </form>

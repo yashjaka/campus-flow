@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useLocation, Link } from "wouter";
-import { useAdminLogin } from "@workspace/api-client-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { campusUserStore } from "@/lib/campus-store";
 import {
   Card,
   CardContent,
@@ -34,7 +34,6 @@ const adminLoginSchema = z.object({
 
 export default function AdminLogin() {
   const [, setLocation] = useLocation();
-  const adminLogin = useAdminLogin();
   const { toast } = useToast();
   const { login } = useAuth();
 
@@ -47,26 +46,34 @@ export default function AdminLogin() {
   });
 
   const onSubmit = (values: z.infer<typeof adminLoginSchema>) => {
-    adminLogin.mutate(
-      { data: values },
-      {
-        onSuccess: (response) => {
-          login(response.token, response.user);
-          toast({
-            title: "Welcome back",
-            description: "Successfully logged in as Administrator.",
-          });
-          setLocation("/dashboard/admin");
-        },
-        onError: (error: any) => {
-          toast({
-            title: "Login failed",
-            description: error.message || "Invalid credentials.",
-            variant: "destructive",
-          });
-        },
-      },
-    );
+    const user = campusUserStore
+      .getAll()
+      .find((u) => u.email === values.email && u.role === "admin");
+
+    if (user && user.isActive) {
+      login(`mock-token-${user.id}`, {
+        id: user.id,
+        name: user.name,
+        role: "admin",
+        email: user.email || null,
+        enrollmentNumber: user.enrollmentNumber || null,
+        collegeName: user.collegeName || null,
+        department: user.department || null,
+        semester: user.semester || null,
+        createdAt: user.createdAt,
+      });
+      toast({
+        title: "Welcome back",
+        description: "Successfully logged in as Administrator.",
+      });
+      setLocation("/dashboard/admin");
+    } else {
+      toast({
+        title: "Login failed",
+        description: "Invalid credentials or account is inactive.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -145,11 +152,7 @@ export default function AdminLogin() {
                   <Button
                     type="submit"
                     className="w-full bg-purple-600 hover:bg-purple-700 text-white"
-                    disabled={adminLogin.isPending}
                   >
-                    {adminLogin.isPending ? (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    ) : null}
                     Access Portal
                   </Button>
                 </form>

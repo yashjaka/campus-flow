@@ -1,13 +1,9 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import {
-  useGetSetupStatus,
-  useCreateAdminSetup,
-  getGetSetupStatusQueryKey,
-} from "@workspace/api-client-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { campusUserStore } from "@/lib/campus-store";
 import {
   Card,
   CardContent,
@@ -28,9 +24,8 @@ import { Button } from "@/components/ui/button";
 import { GradientBackground } from "@/components/layout/GradientBackground";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { ShieldCheck, Loader2 } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 import { motion } from "framer-motion";
-import { useQueryClient } from "@tanstack/react-query";
 
 const setupSchema = z.object({
   name: z.string().min(2, "Name is required"),
@@ -40,17 +35,17 @@ const setupSchema = z.object({
 
 export default function Setup() {
   const [, setLocation] = useLocation();
-  const { data: setupStatus, isLoading } = useGetSetupStatus();
-  const createAdmin = useCreateAdminSetup();
   const { toast } = useToast();
   const { login } = useAuth();
-  const queryClient = useQueryClient();
+
+  // Setup is complete if an admin user already exists
+  const setupComplete = campusUserStore.getByRole("admin").length > 0;
 
   useEffect(() => {
-    if (setupStatus?.setupComplete) {
+    if (setupComplete) {
       setLocation("/login/admin");
     }
-  }, [setupStatus, setLocation]);
+  }, [setupComplete, setLocation]);
 
   const form = useForm<z.infer<typeof setupSchema>>({
     resolver: zodResolver(setupSchema),
@@ -62,42 +57,36 @@ export default function Setup() {
   });
 
   const onSubmit = (values: z.infer<typeof setupSchema>) => {
-    createAdmin.mutate(
-      { data: values },
-      {
-        onSuccess: (response) => {
-          login(response.token, response.user);
-          toast({
-            title: "Setup complete",
-            description: "Admin account created successfully.",
-          });
-          queryClient.invalidateQueries({
-            queryKey: getGetSetupStatusQueryKey(),
-          });
-          setLocation("/dashboard/admin");
-        },
-        onError: (error: any) => {
-          toast({
-            title: "Setup failed",
-            description: error.message || "An error occurred",
-            variant: "destructive",
-          });
-        },
-      },
-    );
+    // Create admin user locally
+    const localUser = campusUserStore.create({
+      name: values.name,
+      email: values.email,
+      role: "admin",
+      department: "Administration",
+      isActive: true,
+    });
+
+    login(`mock-token-${localUser.id}`, {
+      id: localUser.id,
+      name: localUser.name,
+      role: "admin",
+      email: localUser.email || null,
+      enrollmentNumber: localUser.enrollmentNumber || null,
+      collegeName: localUser.collegeName || null,
+      department: localUser.department || null,
+      semester: localUser.semester || null,
+      createdAt: localUser.createdAt,
+    });
+
+    toast({
+      title: "Setup complete",
+      description: "Admin account created successfully.",
+    });
+
+    setLocation("/dashboard/admin");
   };
 
-  if (isLoading) {
-    return (
-      <GradientBackground>
-        <div className="flex h-screen w-full items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        </div>
-      </GradientBackground>
-    );
-  }
-
-  if (setupStatus?.setupComplete) {
+  if (setupComplete) {
     return null; // Will redirect in useEffect
   }
 
@@ -182,14 +171,7 @@ export default function Setup() {
                       </FormItem>
                     )}
                   />
-                  <Button
-                    type="submit"
-                    className="w-full"
-                    disabled={createAdmin.isPending}
-                  >
-                    {createAdmin.isPending ? (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    ) : null}
+                  <Button type="submit" className="w-full">
                     Complete Setup
                   </Button>
                 </form>
